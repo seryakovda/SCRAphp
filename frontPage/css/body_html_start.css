@@ -1,0 +1,13 @@
+body, html {
+    margin: 0px;
+    padding: 0px;
+    font-family: Arial;
+    font-size: 12px;
+    border-spacing: 0px;
+    background-color: #f3faff;
+    background-position: top;
+    background-size: cover;
+    background-repeat: no-repeat;
+/*    background-color: #777777;*/
+    /*border-radius: 3px;*/
+}

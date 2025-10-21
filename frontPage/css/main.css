@@ -1,0 +1,180 @@
+@font-face {
+    font-family: DINproMedium;
+    src: url('/frontPage/fonts/DINPro-Light_1.otf'),
+    url('/frontPage/fonts/DINPro-Light_1.otf') format("opentype");
+}
+
+/*Verdana*/
+:root {
+    --my-border-color: rgba(151, 198, 255, 0.38); /*#97c6ff*/
+    --my-all-background: #ebf7ff;
+    --my-all-background_gray: #e2f1fb;
+    --my-insert-background: #3e9dfb;
+    --my-insert-menu-background: #7ab8ff;
+    --my--menu-background: #daeaff;
+    --my-alert-background: #c31e1e;
+    --my-white-text-color: #ffffff;
+    --my-black-text-color: #436dac;
+    --my-all-background-AnotherMonth: #f6ffdc;
+    --my-all-background-CFEO: #ddffe2;
+    --my-background-input-select:#ebe7b9;
+    /*3e9dfb*/
+}
+
+red{
+    color: #ff0000;
+}
+green{
+    color: #00ff00;
+}
+blue{
+    color: #0000ff;
+}
+yellow{
+    color: #ffff00;
+}
+
+.enterAuthorization {
+    all: initial;
+    margin: 0px;
+    padding: 0px;
+    font-family: Arial;
+    font-size: 12px;
+    border-spacing: 0px;
+    background-color: #f3faff;
+    /*background-image: url('/frontPage/img/backGround2.jpg');*/
+    background-position: top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 240px;
+}
+
+.borderTop {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: #97c6ff; /*для долбанного эксплорера*/
+    border-top-color: var(--my-border-color);
+}
+
+.borderBottom {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #97c6ff; /*для долбанного эксплорера*/
+    border-bottom-color: var(--my-border-color);
+}
+
+.borderLeft {
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-left-color: #97c6ff; /*для долбанного эксплорера*/
+    border-left-color: var(--my-border-color);
+}
+
+.borderRight {
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: #97c6ff; /*для долбанного эксплорера*/
+    border-right-color: var(--my-border-color);
+}
+
+.BorderAll {
+    border: 1px;
+    border-style: solid;
+    border-color: #97c6ff; /*для долбанного эксплорера*/
+    border-color: var(--my-border-color);
+}
+
+.BorderOff {
+    border: 0px;
+    border-style: none;
+}
+
+.borderRadiusTop {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+
+}
+
+.borderRadiusBottom {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.backgroundNormal {
+    background: #f4f9ff; /*для долбанного эксплорера*/
+    background: var(--my-all-background);
+}
+
+.backgroundNormalAM {
+    background: rgb(246, 255, 220);
+    /*background: #f6ffdc; для долбанного эксплорера*/
+    background: var(--my-all-background-AnotherMonth);
+}
+
+.backgroundNormalCFEO{
+    background: #ddffe2; /*для долбанного эксплорера*/
+    background: var(--my-all-background-CFEO);
+}
+.backgroundInsert {
+    background: #3e9dfb; /*для долбанного эксплорера*/
+    background: var(--my-insert-background);
+}
+
+.background-Menu {
+    background: #daeaff; /*для долбанного эксплорера*/
+    background: var(--my--menu-background);
+}
+
+.background-Insert-Menu {
+    background: #7ab8ff; /*для долбанного эксплорера*/
+    background: var(--my-insert-menu-background);
+}
+
+.backgroundAlert {
+    background: #c31e1e; /*для долбанного эксплорера*/
+    background: var(--my-alert-background);
+}
+
+.textColorWhite {
+    color: #ffffff; /*для долбанного эксплорера*/
+    color: var(--my-white-text-color);
+}
+
+.textColorBlack {
+    color: #436dac; /*для долбанного эксплорера*/
+    color: var(--my-black-text-color);
+}
+
+/*паралельная настройка размера шрифта в VElements*/
+.textFontBigSuper {
+    font-family: DINproMedium;
+    font-size: 60px;
+}
+
+.textFontBig {
+    font-family: DINproMedium;
+    font-size: 20px;
+}
+
+.textFontNormal {
+    font-family: DINproMedium;
+    font-size: 14px;
+}
+
+.textFontSmall {
+    font-family: DINproMedium;
+    font-size: 12px;
+}
+
+.textFontMicro {
+    font-family: DINproMedium;
+    font-size: 10px;
+}
+
+.shadowNormal {
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+}
+
+.shadowSmall {
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+}

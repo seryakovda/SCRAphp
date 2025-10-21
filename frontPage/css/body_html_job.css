@@ -1,0 +1,16 @@
+body, html {
+    position: static;
+    margin: 0px;
+    padding: 0px;
+    /*font-family: Arial;*/
+    font-family: DINproMedium;
+    font-size: 14px;
+    border-spacing: 0px;
+    background-color: #f3faff;
+    background-image: url('/frontPage/img/1_logo.jpg');
+    background-position: top;
+    background-size: cover;
+    background-repeat: no-repeat;
+/*    background-color: #777777;*/
+    /*border-radius: 3px;*/
+}

@@ -1,0 +1,4 @@
+Header append X-Frame-Options: "SAMEORIGIN"
+Header set X-Frame-Options: "ALLOW-FROM http://dev-scra/"
+
+Options -Indexes
