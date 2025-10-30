@@ -98,7 +98,18 @@ class RefreshDataFormOrion
 
         $d = new pList_TMP();
         $d->delete();
-        $this->getFull_pList_next();
+        $exit = false;
+        while (!$exit){
+            try {
+                $exit = true;
+                $this->getFull_pList_next();
+            }catch (\PDOException $e){
+                $exit = false;
+                mPrint::R("Сбой",mPrint::RED);
+            }
+        }
+
+
 
     }
 
@@ -144,7 +155,7 @@ class RefreshDataFormOrion
 
         mPrint::R('start',mPrint::LIGHT_BLUE);
         $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
-        mPrint::R($data1,mPrint::YELLOW);
+        //mPrint::R($data1,mPrint::YELLOW);
 
         $ID = 0;
         foreach ($data1 as $key => $row){

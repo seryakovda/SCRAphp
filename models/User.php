@@ -7,6 +7,7 @@ use DB\Connection;
 use DB\Table\ConnectionSettings;
 use DB\Table\nXms_Excel;
 use DB\Table\security_userSettings;
+use DB\Table\Users;
 use Properties\Security;
 
 
@@ -35,6 +36,7 @@ class User
 
     public function login($login, $password)
     {
+
         $login = mb_strtolower($login, 'UTF-8');
         $browser = $_SERVER['HTTP_USER_AGENT'];
         _G_session::userPassword($password);
@@ -63,7 +65,8 @@ class User
     public function hashPassword($password)
     {
         $final = unpack("H*hex",$password);
-        return hash ('ripemd256',$final['hex']);
+        $data   = hash ('ripemd256',$final['hex']);
+        return $data;
     }
 
 
@@ -204,7 +207,9 @@ class User
     }
     private function getUserSettingsFromDB()
     {
-        $this->getSettingsFromPass_system();
+
+        if ($this->data[users::admin] != '1')
+            $this->getSettingsFromPass_system();
 
         $d = new \DB\Table\security_userSettings();
         $data = $d->where($d::id_user,$this->id)
@@ -222,12 +227,12 @@ class User
             "sessionHandle"=>$_SESSION['sessionHandle'],
         ));
         $data = json_decode($jsonData,true);
-        \models\ErrorLog::saveError($data);
         $d = new security_userSettings();
         $d->where($d::id_user,_G_session::id_user())->delete();
 
         foreach ($data as $row){
-            $d->set($d::id_user,_G_session::id_user());
+            $id_user = _G_session::id_user();
+            $d->set($d::id_user,$id_user);
             unset($row['id']);
             unset($row['id_user']);
             foreach ($row as $field => $value){
@@ -267,7 +272,6 @@ class User
                 if (_G_session::id_user() != 0)
                     if (array_key_exists('sateGetDate',$_SESSION) === false){
                         $this->getSettings();
-                        $this->getExcel();
                         $_SESSION['sateGetDate'] = 1;
                     }
             }

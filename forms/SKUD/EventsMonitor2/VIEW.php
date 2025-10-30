@@ -122,7 +122,6 @@ class VIEW extends \forms\FormView
         $winCamV = new Window();
         $winDor = new Window();
         $winCamT = new Window();
-        \models\ErrorLog::saveError("1","getListCameraForVideoStream.txt");
 
         $HTML_winCamV = $winCamV->set()->nameId('winCamV')
             ->width((_G_session::widthMobile() + 240) - 430)

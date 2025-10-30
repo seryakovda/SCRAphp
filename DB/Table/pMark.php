@@ -39,6 +39,8 @@ class pMark extends \DB\Table
         $this->declare_type($this::GroupID,     Type::int);
         $this->declare_type($this::Start,       Type::datetime);
         $this->declare_type($this::Finish,      Type::datetime);
+
+        $this->declare_nonclusteredIndex("newID",$this::ID);
     }
 
 }

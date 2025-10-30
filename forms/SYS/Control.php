@@ -59,7 +59,6 @@ class Control extends \forms\FormsControl
         };
         header("content-type:application/json");
         $json_data = json_encode($answer);
-        \models\ErrorLog::saveError($json_data);
         print $json_data;
         session_write_close();
     }
