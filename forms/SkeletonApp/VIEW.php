@@ -27,7 +27,7 @@ class VIEW extends \forms\FormView
         $this->MODEL = $MODEL;
     }
 
-
+// Работа только admin-a
     public function SkeletonApplication()
     {
         $elements = new \views\Elements\VElements();
@@ -117,13 +117,6 @@ class VIEW extends \forms\FormView
 
         include("HTML.php");
     }
-
-
-
-
-
-
-
 
 
     public function logOut()

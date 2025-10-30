@@ -36,6 +36,26 @@ class RefreshDataFormOrion
         $this->ConnOrion["password"] =    $data[$d::pass_DbOrion];
     }
 
+    public function testConnectOrion()
+    {
+
+        $connOrion = new Connect($this->ConnOrion);
+        $ret = true;
+        try{
+            $data = $connOrion->complexQuery('Select @@version as ver');
+            if ($res = $data->fetch()){
+                $ret = $res['ver'];
+            }else{
+                $ret = false;
+            }
+        }catch (\PDOException $e){
+            $ret = false;
+        }
+
+        return $ret;
+    }
+
+
     public function getMAxIdFor_TRIGGER_SPR()
     {
         $connMSSQL = new Connect($this->ConnOrion);

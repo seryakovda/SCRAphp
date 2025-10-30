@@ -5,6 +5,7 @@ namespace forms\SkeletonApp;
 use DB\Connect;
 use DB\Connection;
 use DB\Table\ConnectionSettings;
+use models\RefreshDataFormOrion;
 use Properties\Security;
 use models\User;
 
@@ -24,7 +25,7 @@ class MODEL
 
     public function testConnectOrion()
     {
-        $user = User::get();
-        return $user->testConnectOrion();
+        $RD = new RefreshDataFormOrion();
+        return $RD->testConnectOrion();
     }
 }
