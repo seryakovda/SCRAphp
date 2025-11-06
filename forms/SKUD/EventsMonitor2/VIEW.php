@@ -14,6 +14,8 @@ class VIEW extends \forms\FormView
     public $windowContent;
     public $dataGrid_Object;
     private $P;
+
+    private $ipCameraTrigger = false;
     /**
      * @var MODEL
      */
@@ -48,6 +50,10 @@ class VIEW extends \forms\FormView
         return $HTML;
     }
 
+    public function setIpCameraTrigger($ipCameraTrigger)
+    {
+        $this->ipCameraTrigger  = $ipCameraTrigger;
+    }
 
     public function ViewNumberPlate()
     {
@@ -117,43 +123,60 @@ class VIEW extends \forms\FormView
         return $HTML;
     }
 
+    private function getHeight()
+    {
+        $height = (_G_session::widthMobile() - 435)/19*9;
+        if ($this->ipCameraTrigger === false){
+            $height =_G_session::heightMobile() - 10;
+        }
+        return $height;
+    }
+
+
     public function MsgBlockAPP()
     {
         $winCamV = new Window();
         $winDor = new Window();
         $winCamT = new Window();
-        \models\ErrorLog::saveError("1","getListCameraForVideoStream.txt");
+        $height = $this->getHeight();
 
-        $HTML_winCamV = $winCamV->set()->nameId('winCamV')
-            ->width((_G_session::widthMobile() + 240) - 430)
-            ->height(((_G_session::widthMobile() + 240) - 430)/19*9)
+        $this->windowContent = $winCamV->set()->nameId('winCamV')
+            ->width(_G_session::widthMobile() - 435)
+            ->height($height)
             ->headSizeNone()
             ->shadowSmall()
             ->setBackgroundCssClass('')
             ->floatLeft()
             ->content($this->VideoStreamWindow())
+            ->marginMainDIV_OFF()
             ->get();
-        $HTML_winDor = $winDor->set()->nameId('winDor')
-            ->width( 430)
-            ->height(_G_session::heightMobile()-10,"height:")
+
+
+        if ($this->ipCameraTrigger !== false){
+            $this->windowContent = $this->windowContent . $winCamT->set()->nameId('winCamT')
+                    ->width(_G_session::widthMobile() - 435)
+                    ->height(_G_session::heightMobile()-820)
+                    ->setBackgroundCssClass('')
+                    ->headSizeNone()
+                    ->shadowSmall()
+                    ->floatLeft()
+                    ->marginMainDIV_OFF()
+                    ->content($this->ViewNumberPlate())
+                    ->get();
+        }
+
+
+
+        $this->windowContent = $this->windowContent .  $winDor->set()->nameId('winDor')
+            ->width( 420)
+            ->height(_G_session::heightMobile()-20,"height:")
             ->setBackgroundCssClass('')
             ->headSizeNone()
             ->shadowSmall()
             ->style("display:block; overflow-y: auto;")
             ->content($this->ViewPass())
             ->get();
-//        $HTML_winCamT = $winCamT->set()->nameId('winCamT')
-//            ->width((_G_session::widthMobile() + 240) - 430)
-//            ->height(_G_session::heightMobile()-820)
-//            ->setBackgroundCssClass('')
-//            ->headSizeNone()
-//            ->shadowSmall()
-//            ->floatLeft()
-//            ->content($this->ViewNumberPlate())
-//            ->get();
-        $this->windowContent = $HTML_winCamV
-            //. $HTML_winCamT;
-        . $HTML_winDor  ;
+
     }
 
 
@@ -163,10 +186,11 @@ class VIEW extends \forms\FormView
         // http://10.13.18.154:555/Ea8fKquV?container=mjpeg&stream=main
         $HTML = '';
         $win = new Window();
+        $height = $this->getHeight();
         $HTML = $HTML .  $win->set()->nameId("ModifyDisplay")
                 ->headSizeNone()
                 ->shadowSmall()
-                ->height(((_G_session::widthMobile() + 240) - 430)/19*9)
+                ->height($height)
                 ->width(130)
                 ->setBackgroundCssClass('')
                 ->floatLeft()
@@ -178,7 +202,7 @@ class VIEW extends \forms\FormView
         while ($res = $data->fetch()){
             $ipS = $res['cameraServerIp'];
             $canal = $res['cameraChannelGuid'];
-            $width = ((_G_session::widthMobile() + 240) - 580)/ 2;
+            $width = (_G_session::widthMobile() - 590)/ 2; // оставшийся размер от специальных окон
             $urlImage = "http://$ipS:555/$canal?container=mjpeg&amp;stream=main";
             $this->listURL[] = $urlImage;
             $img = "<img id = \"imgCamV$i\" width=\"$width\" src=\"$urlImage\">";
@@ -268,6 +292,7 @@ class VIEW extends \forms\FormView
             ->floatLeft()
             ->shadowSmall()
             ->headSizeNone()
+            ->marginMainDIV_OFF(1)
             ->content($HTML);
         if ($data['status_list'] != 0)
             $this->WND->backgroundAlert();

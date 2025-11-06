@@ -83,14 +83,14 @@ class Control extends \forms\FormsControl
     {
 
     }
-/*
-    public function runReports()
-    {
-        $report = new  \models\Reports();
-        $report->setWait($_REQUEST['wait']);
-        print $report->createReport($_REQUEST['report']);
-    }
-*/
+    /*
+        public function runReports()
+        {
+            $report = new  \models\Reports();
+            $report->setWait($_REQUEST['wait']);
+            print $report->createReport($_REQUEST['report']);
+        }
+    */
     public function sendSetUpData()
     {
         _G_session::typeDevice($_REQUEST['device']);

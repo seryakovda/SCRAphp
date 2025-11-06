@@ -59,7 +59,7 @@ abstract class Connection
     }
     private function Conn()
     {
-        error_reporting(0);
+        require Security::DIR()."/Properties/error_reporting.php";
 
         if ($this->MSSQL == Security::TYPE_dB_MS_SQL)
             $this->connPDO();
@@ -67,7 +67,6 @@ abstract class Connection
             $this->connPDO_MySQL();
 
 
-        require Security::DIR()."/Properties/error_reporting.php";
 
     }
 
@@ -79,6 +78,7 @@ abstract class Connection
                 $this->arrayConnectionSettings["userName"], $this->arrayConnectionSettings["password"],
                 array("charset" => "UTF-8"));
             $this->dbh->setAttribute(\PDO::SQLSRV_ATTR_QUERY_TIMEOUT, 300); // timeout in seconds
+            $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             //$this->dbh->setAttribute(\PDO::ATTR_PERSISTENT, true); // try to enable this value, but the timeout should suffice
             //  => 300,
             // PDO::ATTR_PERSISTENT => true,

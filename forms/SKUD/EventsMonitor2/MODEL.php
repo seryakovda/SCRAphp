@@ -193,7 +193,6 @@ class MODEL extends \forms\FormsModel
                     FROM nXms_Excel
                     WHERE FIND_IN_SET(ip, '$this->listCameraViewIp') > 0;
         ";
-\models\ErrorLog::saveError($query,"getListCameraForVideoStream.txt");
         $conn =  new Connect();
         return $conn->complexQuery($query);
     }

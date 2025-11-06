@@ -24,6 +24,8 @@ class RefreshDataFormOrion
 {
     public $ConnOrion = Array();
 
+    public $lastID = 0;
+
     public function __construct()
     {
         $d =  new ConnectionSettings();
@@ -35,6 +37,26 @@ class RefreshDataFormOrion
         $this->ConnOrion["userName"] =    $data[$d::login_DbOrion];
         $this->ConnOrion["password"] =    $data[$d::pass_DbOrion];
     }
+
+    public function testConnectOrion()
+    {
+
+        $connOrion = new Connect($this->ConnOrion);
+        $ret = true;
+        try{
+            $data = $connOrion->complexQuery('Select @@version as ver');
+            if ($res = $data->fetch()){
+                $ret = $res['ver'];
+            }else{
+                $ret = false;
+            }
+        }catch (\PDOException $e){
+            $ret = false;
+        }
+
+        return $ret;
+    }
+
 
     public function getMAxIdFor_TRIGGER_SPR()
     {
@@ -54,6 +76,7 @@ class RefreshDataFormOrion
         return $connMSSQL->complexQuery('select MAX(id) as maxId from TRIGGER_pMark_UPD')->fetchField('maxId');
     }
 
+
     private function getListField($classTable)
     {
         $oClass = new \ReflectionClass("\DB\Table\\$classTable");
@@ -67,6 +90,8 @@ class RefreshDataFormOrion
         return $listField;
 
     }
+
+
     public function updateSPR($nameTable)
     {
         $ClassNameTable = "\DB\Table\\$nameTable";
@@ -98,7 +123,18 @@ class RefreshDataFormOrion
 
         $d = new pList_TMP();
         $d->delete();
-        $this->getFull_pList_next();
+        $exit = false;
+        while (!$exit){
+            try {
+                $exit = true;
+                $this->getFull_pList_next();
+            }catch (\PDOException $e){
+                $exit = false;
+                mPrint::R("Сбой",mPrint::RED);
+            }
+        }
+
+
 
     }
 
@@ -113,38 +149,12 @@ class RefreshDataFormOrion
             $LastId->set($LastId::f_pList,"1")->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
         }
         $connMSSQL = new Connect($this->ConnOrion);
-        $query1 = "
-        SELECT        TOP (100) 
-                                dbo.pList.ID,
-                                dbo.pList.Name,
-                                dbo.pList.FirstName,
-                                dbo.pList.MidName,
-                                dbo.PCompany.Name AS CompN,
-                                dbo.PDivision.Name AS DivN,
-                                dbo.PPost.Name AS name_pPost,
-                                dbo.pList.Picture
-        FROM            
-             dbo.pList 
-        LEFT OUTER JOIN
-                 dbo.PDivision 
-                     ON 
-                         dbo.pList.Section = dbo.PDivision.ID 
-        LEFT OUTER JOIN
-                 dbo.PCompany 
-                     ON 
-                         dbo.pList.Company = dbo.PCompany.ID 
-        LEFT OUTER JOIN
-                 dbo.PPost 
-                     ON 
-                         dbo.pList.Post = dbo.PPost.ID 
-        WHERE dbo.pList.ID > $startId
-        ORDER BY  dbo.pList.ID
 
-        ";
-
+        $query1 = $this->buildQuery_pList("> $startId");
         mPrint::R('start',mPrint::LIGHT_BLUE);
+
         $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
-        mPrint::R($data1,mPrint::YELLOW);
+        //mPrint::R($data1,mPrint::YELLOW);
 
         $ID = 0;
         foreach ($data1 as $key => $row){
@@ -158,9 +168,13 @@ class RefreshDataFormOrion
                 $d->set($field,$value,$binary);
             }
             $d->insert();
+            $d = null;
+            unset($d);
             $LastId->set($LastId::id_pList,$ID)->update();
-            mPrint::R($ID,mPrint::BLUE);
         }
+        $LastId = null;
+        unset($LastId);
+
         if ($ID != 0) {
             mPrint::R($ID,mPrint::GREEN);
             $this->getFull_pList_next();
@@ -195,9 +209,9 @@ class RefreshDataFormOrion
         }
         mPrint::R('STOP',mPrint::PINK);
     }
-/*
- *  pMark
- */
+
+
+
     public function getFull_pMark_start()
     {
         $LastId = new LastId();
@@ -206,7 +220,7 @@ class RefreshDataFormOrion
         $d = new pMark_TMP();
         $d->delete();
         $this->getFull_pMark_next();
-
+        $this->lastID = $this->getMAxIdFor_TRIGGER_pMark();
     }
 
     public function getFull_pMark_next()
@@ -220,24 +234,7 @@ class RefreshDataFormOrion
             $LastId->set($LastId::f_pMark,"1")->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
         }
         $connMSSQL = new Connect($this->ConnOrion);
-        $query1 = "
-           SELECT        TOP (100) 
-                                   ID, 
-                                   Gtype, 
-                                   Config, 
-                                   dbo.fn_convert_codeP(CodeP) AS CodeP_HEX, 
-                                   Status, 
-                                   Owner, 
-                                   GroupID, 
-                                   Start, 
-                                   Finish
-           FROM            
-                pMark
-           WHERE 
-                 dbo.pMark.ID > $startId
-           ORDER BY  dbo.pMark.ID
-
-        ";
+        $query1 = $this->buildQuery_pMark("> $startId");
 
         mPrint::R('start',mPrint::LIGHT_BLUE);
         $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
@@ -263,6 +260,8 @@ class RefreshDataFormOrion
             $this->getFull_pMark_end();
     }
 
+
+
     public function getFull_pMark_end()
     {
         $conn = new Connect();
@@ -285,10 +284,151 @@ class RefreshDataFormOrion
             mPrint::R('EndDelete_TMP',mPrint::GREEN);
 
             $LastId = new LastId();
-            $LastId->set($LastId::f_pMark,"0")->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
+            $LastId
+                ->set($LastId::f_pMark,"0")
+                ->set($LastId::id_pMark,$this->lastID)
+                ->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
         }
 
         mPrint::R('STOP',mPrint::PINK);
     }
 
+    private function buildQuery_pMark($condition)
+    {
+        return "SELECT        TOP (100) 
+                                   ID, 
+                                   Gtype, 
+                                   Config, 
+                                   dbo.fn_convert_codeP(CodeP) AS CodeP_HEX, 
+                                   Status, 
+                                   Owner, 
+                                   GroupID, 
+                                   Start, 
+                                   Finish
+           FROM            
+                pMark
+           WHERE 
+                 dbo.pMark.ID  $condition
+           ORDER BY  dbo.pMark.ID";
+    }
+
+
+    private function buildQuery_pList($condition)
+    {
+        return "SELECT        TOP (100) 
+                                dbo.pList.ID,
+                                dbo.pList.Name,
+                                dbo.pList.FirstName,
+                                dbo.pList.MidName,
+                                dbo.PCompany.Name AS CompN,
+                                dbo.PDivision.Name AS DivN,
+                                dbo.PPost.Name AS name_pPost,
+                                dbo.pList.Picture
+        FROM            
+             dbo.pList 
+        LEFT OUTER JOIN
+                 dbo.PDivision 
+                     ON 
+                         dbo.pList.Section = dbo.PDivision.ID 
+        LEFT OUTER JOIN
+                 dbo.PCompany 
+                     ON 
+                         dbo.pList.Company = dbo.PCompany.ID 
+        LEFT OUTER JOIN
+                 dbo.PPost 
+                     ON 
+                         dbo.pList.Post = dbo.PPost.ID 
+        WHERE dbo.pList.ID $condition
+        ORDER BY  dbo.pList.ID";
+    }
+
+    public function refresh_pMark_afterLastId()
+    {
+        $d0 = new LastId();
+        $data = $d0 ->select ("{$d0::id_pMark},{$d0::f_pMark}") -> fetch();
+        if ($data[$d0::f_pMark] == 0){ // если идёт обновление встревать ненужно
+            $lastID = $data[$d0::id_pMark];
+            $lastID_inDB = $this->getMAxIdFor_TRIGGER_pMark(); // последнй ID триггера
+
+            $connMSSQL = new Connect($this->ConnOrion);
+            $condition = "
+            SELECT        id_Table
+            FROM          TRIGGER_pMark_UPD
+            WHERE        (id > $lastID)
+            GROUP BY id_Table
+            HAVING        (NOT (id_Table IS NULL))";
+            $condition = "IN ($condition)";
+            $query1  = $this->buildQuery_pMark($condition);
+            $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
+
+            $ID = 0;
+            foreach ($data1 as $key => $row){
+                $data = $d0 ->select ("{$d0::id_pMark},{$d0::f_pMark}") -> fetch();
+                if ($data[$d0::f_pMark] != 0){ //если вдруг начато глобальное обновление вырубаемся
+                    break;
+                }
+                $d = new pMark();// берём таблицу
+                foreach ($row as $field => $value){ // заполняем поля
+                    if ($field == 'ID')
+                        $ID = $value; // получаем ID
+                    $d->set($field,$value);
+                }
+                $d1 = new pMark(); // выбираем туже таблицу
+                $d1->where($d1::ID,$ID)->delete(); // удаляем старое значение (если оно есть)
+
+                $d->insert(); // добавляю вновь пришедшее
+                $d = null;
+                unset($d);
+            }
+            if ($data[$d0::f_pMark] != 0){ //если вдруг начато глобальное обновление вырубаемся
+                return ;
+            }
+            $d0->set($d0::id_pMark,$lastID_inDB)->update(); // запоминаем последний обработанный ID для следующего фрагментированного  обновления
+        }
+    }
+
+    public function refresh_pList_afterLastId()
+    {
+        $d0 = new LastId();
+        $data = $d0 ->select ("{$d0::id_pList},{$d0::f_pList}") -> fetch();
+        if ($data[$d0::f_pList] == 0){ // если идёт обновление встревать ненужно
+            $lastID = $data[$d0::id_pList];
+            $lastID_inDB = $this->getMAxIdFor_TRIGGER_pList(); // последнй ID триггера
+            $connMSSQL = new Connect($this->ConnOrion);
+            $condition = "
+            SELECT        id_Table
+            FROM          TRIGGER_pList_UPD
+            WHERE        (id > $lastID)
+            GROUP BY id_Table
+            HAVING        (NOT (id_Table IS NULL))";
+            $condition = "IN ($condition)";
+            $query1  = $this->buildQuery_pList($condition);
+            $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
+
+            $ID = 0;
+            foreach ($data1 as $key => $row){
+                $data = $d0 ->select ("{$d0::id_pList},{$d0::f_pList}") -> fetch();
+                if ($data[$d0::f_pList] != 0){ //если вдруг начато глобальное обновление вырубаемся
+                    break;
+                }
+
+                $d = new pList();// берём таблицу
+                foreach ($row as $field => $value){ // заполняем поля
+                    if ($field == 'ID')
+                        $ID = $value; // получаем ID
+                    $d->set($field,$value);
+                }
+                $d1 = new pList(); // выбираем туже таблицу
+                $d1->where($d1::ID,$ID)->delete(); // удаляем старое значение (если оно есть)
+
+                $d->insert(); // добавляю вновь пришедшее
+                $d = null;
+                unset($d);
+            }
+            if ($data[$d0::f_pList] != 0){ //если вдруг начато глобальное обновление вырубаемся
+                return ;
+            }
+            $d0->set($d0::id_pList,$lastID_inDB)->update(); // запоминаем последний обработанный ID для следующего фрагментированного  обновления
+        }
+    }
 }

@@ -37,7 +37,6 @@ class Control extends \forms\FormsControl
 
     public function replaceValue()
     {
-        \models\ErrorLog::saveError($_REQUEST);
         $d = new ConnectionSettings();
         $d->set($_REQUEST['_var'],$_REQUEST['_val'])
             ->update();

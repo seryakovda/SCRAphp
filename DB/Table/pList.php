@@ -36,6 +36,8 @@ class pList extends \DB\Table
         $this->declare_type($this::DivN,        Type::varchar,200);
         $this->declare_type($this::name_pPost,  Type::varchar,200);
         $this->declare_type($this::Picture,     Type::mediumblob);
+
+        $this->declare_nonclusteredIndex("nenID",$this::ID);
     }
 
 }
