@@ -8,4 +8,5 @@ require "spl_autoload.php";
 
 
 $R = new models\RefreshDataFormOrion();
-$R->getFull_pMark_next();
+$R->getFull_pList_start();
+//$R->getFull_pMark_next();
