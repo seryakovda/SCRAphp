@@ -77,8 +77,6 @@ class Router
 
         // проверяем блокировку базы данных (метод скорее всего нужно переместить сюда в роутер)
 
-        $userBlock = $this->getBlockDB();
-
 
         //  Если пользователь не с сайта и и произиводиться попытка первого входа или полного обновления страницы
         //  при неавторизованом мользователе
@@ -96,13 +94,11 @@ class Router
         // Значит невиг дальше работать!
         // Возможен альтернативный маршрут... но это я не помню нафига писал :)
 
-        if (($userBlock != 0) and ($userBlock != $detectedUser)) {
-            $this->route = "Блокировка_базы";
-        } else {
-            if ($newRoute) {
-                $this->route = $newRoute;
-            }
+
+        if ($newRoute) {
+            $this->route = $newRoute;
         }
+
 
 
         // Если пользователь определён как пользователь системы (не сайта)
@@ -262,20 +258,6 @@ class Router
 
     }
 
-    public function getBlockDB()
-    {
-        if (is_array($_SESSION)){
-            $block = new \DB\Table\Block();
-            $data  = $block->select($block::value);
-            if ($res = $data->fetch()) {
-                return $res[$block::value];
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-    }
 
     public function MessageBlockDB()
     {

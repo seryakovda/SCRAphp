@@ -46,13 +46,13 @@
         setTimeout(GetEvents, 2000);
         //setTimeout(GetEventsNumber, 2000);
 
-        let rel = setInterval(reload, 60000);
+        let rel = setInterval(reload_camera, 60000);
 
         updateTime();
         window.setInterval(updateTime,1000);
     }
 
-    function reload()
+    function reload_camera()
     {
 
         for (index = 0; index < _G_value0.length; ++index) {
@@ -89,7 +89,9 @@
                 GetEvents()
             },
             error: function(){
-                setTimeout(reLoad, 60000);
+                GetEvents()
+                console.log("Ошибка которой не должно возникать")
+                // setTimeout(reLoad, 60000);
             }
         });
     }
@@ -111,12 +113,11 @@
                 GetEventsNumber()
             },
             error: function(){
-                setTimeout(reLoad, 60000);
+                GetEventsNumber()
+                console.log("Ошибка которой не должно возникать")
+                // setTimeout(reLoad, 60000);
             }
         });
     }
-    function reLoad()
-    {
-        location.reload();
-    }
+
 </script>
