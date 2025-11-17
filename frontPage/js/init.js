@@ -498,7 +498,7 @@ function fixingAnError(data)
         },
         dataType: 'text',
         success: function () {
-            _G_BlockAppMessage('Ошибка выполнения. Обратитесь в службу поддержки');
+            //_G_BlockAppMessage('Ошибка выполнения. Обратитесь в службу поддержки'); 
         }
     });
 }
