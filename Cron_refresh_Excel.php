@@ -8,5 +8,9 @@ require "Properties/error_reporting.php";
 require "spl_autoload.php";
 
 $R = new models\RefreshDataFormPS();
-
-$R->getExcel();
+if ($R->testConnection()){
+    $R->getSession();
+    if ($R->authorizationOnThePS()){
+        $R->getExcel();
+    }
+}
