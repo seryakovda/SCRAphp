@@ -51,7 +51,7 @@ class VIEW extends \forms\FormView
         $caption = 'Пароль pass-system: ******';
         $HTML = $HTML . $BTN->set($caption)->width(600)->height(40)->func("replaceValue('$caption','$var','$val', true)")->horizontalPosLeft()->fontBig()->floateLeft()->get();
 
-        $HTML = $HTML . $BTN->set("Проверить соединение c pass-system")->width(600)->height(40)->func('')->fontBig()->floateLeft()->get();
+        $HTML = $HTML . $BTN->set("Проверить соединение c pass-system")->width(600)->height(40)->func('testConnectPS()')->fontBig()->floateLeft()->get();
 
         $var = ConnectionSettings::address_DbOrion;
         $val = $dataArray[$var];

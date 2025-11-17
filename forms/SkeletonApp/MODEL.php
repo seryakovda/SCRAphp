@@ -6,6 +6,7 @@ use DB\Connect;
 use DB\Connection;
 use DB\Table\ConnectionSettings;
 use models\RefreshDataFormOrion;
+use models\RefreshDataFormPS;
 use Properties\Security;
 use models\User;
 
@@ -27,5 +28,11 @@ class MODEL
     {
         $RD = new RefreshDataFormOrion();
         return $RD->testConnectOrion();
+    }
+
+    public function testConnectPS()
+    {
+        $RD = new RefreshDataFormPS();
+        return $RD->testConnection();
     }
 }

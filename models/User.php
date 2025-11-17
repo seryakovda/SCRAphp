@@ -135,13 +135,16 @@ class User
     public function getSettingsFromPass_system()
     {
         $RD = new RefreshDataFormPS();
-        $RD->getSession();
-        if ($RD->authorizationOnThePS()){
-            if (_G_session::id_user() != 0)
-                if (array_key_exists('sateGetDate',$_SESSION) === false){
-                    $RD->getSettings();
-                    $_SESSION['sateGetDate'] = 1;
-                }
+        if ($RD->testConnection()){
+            $RD->getSession();
+            if ($RD->authorizationOnThePS()){
+                if (_G_session::id_user() != 0)
+                    if (array_key_exists('sateGetDate',$_SESSION) === false){
+                        $RD->getSettings();
+                        $_SESSION['sateGetDate'] = 1;
+                    }
+            }
+
         }
     }
 }

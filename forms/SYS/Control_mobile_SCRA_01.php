@@ -23,9 +23,10 @@ class Control_mobile_SCRA_01 extends Control
 
     public function getDataByQrCode()
     {
-        $this->MODEL->registrationScanQrCode($_REQUEST['qrCode']);
-
-        $answer = $this->MODEL->getDataByQrCode($_REQUEST['qrCode']);
+        \models\ErrorLog::saveError("getDataByQrCode");
+        //$this->MODEL->registrationScanQrCode($_REQUEST['qrCode']);
+        $answer = $this->MODEL->getDataByQrCode($_REQUEST['qrCode'],$_REQUEST['typeCode']);
+        \models\ErrorLog::saveError($answer);
         header("content-type:application/json");
         print json_encode($answer);
     }
@@ -33,6 +34,6 @@ class Control_mobile_SCRA_01 extends Control
     public function sendBinaryData()
     {
         \models\ErrorLog::saveError($_REQUEST['binaryData'],"sendBinaryData.txt");
-        \models\ErrorLog::saveError($this->MODEL->getEmarin($_REQUEST['binaryData']),"sendBinaryData.txt");
+//        \models\ErrorLog::saveError($this->MODEL->getEmarin($_REQUEST['binaryData']),"sendBinaryData.txt");
     }
 }

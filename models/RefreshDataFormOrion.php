@@ -251,8 +251,10 @@ class RefreshDataFormOrion
             $d = null;
             unset($d);
             $LastId->set($LastId::id_pMark,$ID)->update();
-//            mPrint::R($ID,mPrint::BLUE);
         }
+        $LastId = null;
+        unset($LastId);
+
         if ($ID != 0) {
             mPrint::R($ID,mPrint::GREEN);
             $this->getFull_pMark_next();
@@ -273,7 +275,7 @@ class RefreshDataFormOrion
             mPrint::R('startAdd',mPrint::GREEN);
             $conn->complexQuery("
                 insert into pMark ( ID, Gtype, Config, CodeP_HEX, Status, Owner, GroupID, Start, Finish)
-                    select ID, Gtype, Config, CodeP_HEX, Status, Owner, GroupID, Start, Finish 
+                    select ID, Gtype, Config, SUBSTRING(CodeP_HEX,9,6), Status, Owner, GroupID, Start, Finish 
                     from pMark_TMP
                 ");
             mPrint::R('EndAdd',mPrint::GREEN);
@@ -345,7 +347,7 @@ class RefreshDataFormOrion
     public function refresh_pMark_afterLastId()
     {
         $d0 = new LastId();
-        $data = $d0 ->select ("{$d0::id_pMark},{$d0::f_pMark}") -> fetch();
+        $data = $d0 ->select ($d0::id_pMark.",".$d0::f_pMark) -> fetch();
         if ($data[$d0::f_pMark] == 0){ // если идёт обновление встревать ненужно
             $lastID = $data[$d0::id_pMark];
             $lastID_inDB = $this->getMAxIdFor_TRIGGER_pMark(); // последнй ID триггера
@@ -363,7 +365,7 @@ class RefreshDataFormOrion
 
             $ID = 0;
             foreach ($data1 as $key => $row){
-                $data = $d0 ->select ("{$d0::id_pMark},{$d0::f_pMark}") -> fetch();
+                $data = $d0 ->select ($d0::id_pMark.",".$d0::f_pMark) -> fetch();
                 if ($data[$d0::f_pMark] != 0){ //если вдруг начато глобальное обновление вырубаемся
                     break;
                 }
@@ -390,7 +392,7 @@ class RefreshDataFormOrion
     public function refresh_pList_afterLastId()
     {
         $d0 = new LastId();
-        $data = $d0 ->select ("{$d0::id_pList},{$d0::f_pList}") -> fetch();
+        $data = $d0 ->select ($d0::id_pMark.",".$d0::f_pMark) -> fetch();
         if ($data[$d0::f_pList] == 0){ // если идёт обновление встревать ненужно
             $lastID = $data[$d0::id_pList];
             $lastID_inDB = $this->getMAxIdFor_TRIGGER_pList(); // последнй ID триггера
@@ -407,7 +409,7 @@ class RefreshDataFormOrion
 
             $ID = 0;
             foreach ($data1 as $key => $row){
-                $data = $d0 ->select ("{$d0::id_pList},{$d0::f_pList}") -> fetch();
+                $data = $d0 ->select ($d0::id_pMark.",".$d0::f_pMark) -> fetch();
                 if ($data[$d0::f_pList] != 0){ //если вдруг начато глобальное обновление вырубаемся
                     break;
                 }

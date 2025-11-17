@@ -18,8 +18,11 @@
  */
 
 namespace models;
+use \DB\Table\Users;
+use \models\ErrorLog;
 
-use DB\Table\Users;
+use \models\User;
+
 
 class Router
 {
@@ -111,12 +114,12 @@ class Router
         }
 
         // возможно пользователю необходимо сменить пароль
-        $renewPassword = $this->getRenewPassword();
-        if ($renewPassword == '1'){
-            $this->parent = 'SYS';
-            $this->route = "ReplacePassword";
-            $this->r1 = '';
-        }
+//        $renewPassword = $this->getRenewPassword();
+//        if ($renewPassword == '1'){
+//            $this->parent = 'SYS';
+//            $this->route = "ReplacePassword";
+//            $this->r1 = '';
+//        }
 
 
         // получает $this->checkMonth и $this->f_grant
@@ -144,7 +147,9 @@ class Router
                         case "SYS":
                             $_SESSION["id_user"] = 0;
                             $_SESSION["idMenu"] = 0;
-                            $this->runInstruction();
+                            $modelExtension = array_key_exists("modelExtension",    $_SESSION)?     $_SESSION["modelExtension"]    : "";
+
+                            $this->runInstruction($modelExtension);
                             break;
                     }
                     break;
@@ -156,7 +161,10 @@ class Router
                             \views\Views::MsgBlock("Внимание", "В данное время производится глобальная операция, в связи с этим доступ Ограничен");
                             break;
                         }
-
+                        case "SYS":
+                            $modelExtension = array_key_exists("modelExtension",    $_SESSION)?     $_SESSION["modelExtension"]    : "";
+                            $this->runInstruction($modelExtension);
+                            break;
                         // Погнали в метод выполнения
                         default: {
                             $this->runInstruction();
@@ -166,7 +174,7 @@ class Router
                 }
             }
         } else {
-            \views\Views::MsgBlock("Внимание", "нет доступа: класс-{$this->route}, метод-{$this->r1}, пользовател{$detectedUser}");
+            \views\Views::MsgBlock("Внимание", "Нет доступа.");
 
         }
     }
@@ -204,7 +212,7 @@ class Router
         $this->f_grant = 1;
     }
 
-    private function runInstruction()
+    private function runInstruction($modelExtension = "")
     {
         // тут просто!!!
         // Все инструкции Инструкции группированы для конкретной формы хранятся в forms
@@ -218,7 +226,10 @@ class Router
             if ($_REQUEST['parent'] == 'SUPERUSER'){ // если parent НЕ указаывает на SUPERUSER
                 $saveLog = false;
             }
-
+        if (array_key_exists('r1',$_REQUEST))
+            if ($_REQUEST['r1'] == 'uploadPhoto'){ // это грузиться фотка ... пока не фиксируем
+                $saveLog = false;
+            }
 
         if ($saveLog){
             $json_request = json_encode($_REQUEST,true);
@@ -237,22 +248,21 @@ class Router
             $l ="";
             $l1 ="";
         }
-
-        $SearchFile = $_SERVER['DOCUMENT_ROOT']."/forms$l1$this->parent/$this->route/Control.php";
+        $SearchFile = $_SERVER['DOCUMENT_ROOT']."/forms$l1$this->parent/$this->route/Control$modelExtension.php";
         $SearchFile = str_replace('\\','/',$SearchFile);
 
         if (file_exists($SearchFile)){
-            $class = "\\forms$l$this->parent\\$this->route\\Control";
+            $class = "\\forms$l$this->parent\\$this->route\\Control$modelExtension";
             $run = new $class;
             $run->run();
         }else{
-            \views\Views::MsgBlock("Внимание !!! ", "ненайден класс - $SearchFile");
+            \views\Views::MsgBlock("Внимание !!! ", "Класс ненайден");
         }
 
 
     }
 
-     public function getBlockDB()
+    public function getBlockDB()
     {
         if (is_array($_SESSION)){
             $block = new \DB\Table\Block();

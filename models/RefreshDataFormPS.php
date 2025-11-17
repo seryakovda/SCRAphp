@@ -25,11 +25,17 @@ use views\mPrint;
 class RefreshDataFormPS
 {
 
-    public function curl_request_async($array)
+    private $data;
+
+    public function __construct()
     {
         $d =  new ConnectionSettings();
-        $data = $d->select()->fetch();
-        $ip = $data[$d::addressPS];
+        $this->data = $d->select()->fetch();
+    }
+
+    public function curl_request_async($array)
+    {
+        $ip = $this->data[ConnectionSettings::addressPS];
         $HTTP = "http://$ip/index_ajax.php";
         $ch = curl_init($HTTP);
 
@@ -43,6 +49,27 @@ class RefreshDataFormPS
         curl_close($ch);
         return $html;
     }
+
+    public function testConnection()
+    {
+        $ip = $this->data[ConnectionSettings::addressPS];
+        $HTTP = "http://$ip/index_ajax.php";
+        if(!filter_var($HTTP, FILTER_VALIDATE_URL)){
+            return false;
+        }
+        //инициализация curl
+        $curlInit = curl_init($HTTP);
+        curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
+        curl_setopt($curlInit,CURLOPT_HEADER,true);
+        curl_setopt($curlInit,CURLOPT_NOBODY,true);
+        curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
+        //получение ответа
+        $response = curl_exec($curlInit);
+        curl_close($curlInit);
+        if ($response) return true;
+        return false;
+    }
+
 
     public function getSession()
     {

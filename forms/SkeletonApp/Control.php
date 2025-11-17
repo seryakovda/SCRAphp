@@ -50,4 +50,12 @@ class Control extends \forms\FormsControl
             print "Тест проверки ПРОВАЛЕН !!!";
         }
     }
+    public function testConnectPS()
+    {
+        if ($res = $this->MODEL->testConnectPS()){
+            print "Тест проверки пройден. ";
+        }else{
+            print "Тест проверки ПРОВАЛЕН !!!";
+        }
+    }
 }

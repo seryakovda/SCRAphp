@@ -79,13 +79,15 @@ abstract class Connection
                 array("charset" => "UTF-8"));
             $this->dbh->setAttribute(\PDO::SQLSRV_ATTR_QUERY_TIMEOUT, 300); // timeout in seconds
             $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->dbh->setAttribute(\PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_UTF8);
             //$this->dbh->setAttribute(\PDO::ATTR_PERSISTENT, true); // try to enable this value, but the timeout should suffice
             //  => 300,
             // PDO::ATTR_PERSISTENT => true,
         } catch (\PDOException $e) {
-            print "Connection Error for MySQL server";
-//    $e->getMessage();
-            exit;
+            if (Security::DEVELOPMENT){
+                print $e->getMessage();
+                exit;
+            }
         }
     }
 
@@ -96,11 +98,13 @@ abstract class Connection
             $this->dbh = new \PDO("sqlsrv:Server=" . $this->arrayConnectionSettings["serverName"] . ";Database=" . $this->arrayConnectionSettings["dataBase"] . ";Encrypt=0;TrustServerCertificate=1"
                 , $this->arrayConnectionSettings["userName"], $this->arrayConnectionSettings["password"]);
             $this->dbh->setAttribute(\PDO::SQLSRV_ATTR_QUERY_TIMEOUT, 300); // timeout in seconds
+            $this->dbh->setAttribute(\PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_UTF8);
             //$this->dbh->setAttribute(\PDO::ATTR_PERSISTENT, true); // try to enable this value, but the timeout should suffice
         } catch (\PDOException $e) {
-            print "Connection Error for MS SQL server";
-            //print $e->getMessage();
-            exit;
+            if (Security::DEVELOPMENT){
+                print $e->getMessage();
+                exit;
+            }
         }
     }
 

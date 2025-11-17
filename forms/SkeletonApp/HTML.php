@@ -158,6 +158,24 @@
         })
     }
 
+    function testConnectPS()
+    {
+        closeBlockAPP()
+        _G_Ajax({
+            type: "GET",
+            url: "index_ajax.php",
+            dataType: 'text',
+            data: {
+                r0: "SkeletonApp",
+                r1: "testConnectPS"
+            },
+            success: function (data) {
+                _G_BlockAppMessageOK(data,'reloadPage()')
+            }
+        })
+    }
+
+
     function reloadPage()
     {
         location.reload();

@@ -6,7 +6,7 @@ use DB\Table\pList;
 use \DB\View\View_Orion_getEvents;
 use forms\FormView;
 use models\_G_session;
-use Mpdf\Tag\P;
+use models\RefreshDataFormOrion;
 
 class Control extends \forms\FormsControl
 {
@@ -76,62 +76,83 @@ class Control extends \forms\FormsControl
     public function GetEvents()
     {
         session_write_close() ;
-        $this->MODEL->GetEvents($this->DoorIndex);
-        $this->setFormWidth(_G_session::widthMobile());
-        $this->defineTable();
-        $this->init();
+        $d = new RefreshDataFormOrion();
+        if ($d->testConnectOrion()){
+            $this->MODEL->GetEvents($this->DoorIndex);
+            $this->setFormWidth(_G_session::widthMobile());
+            $this->defineTable();
+            $this->init();
 
-        $data = $this->MODEL->getData_event($this->DoorIndex);
-        $this->VIEW->setDataGridObject($data);
-        $greed = $this->VIEW->ViewPass();
-        $this->VIEW->printElement($greed);
+            $data = $this->MODEL->getData_event($this->DoorIndex);
+            $this->VIEW->setDataGridObject($data);
+            $greed = $this->VIEW->ViewPass();
+            $this->VIEW->printElement($greed);
+        }else{
+            sleep(15); //нужно 180
+            $this->VIEW->printElement("<code></code><script>function loadscript() {} </script>");
+        }
     }
 
     public function GetEventsNumber()
     {
         session_write_close();
-        $this->MODEL->GetEventsNumber();
-        $this->VIEW->setMODEL($this->MODEL);
-        $HTML = $this->VIEW->ViewNumberPlate();
-        $this->VIEW->printElement($HTML);
+        $d = new RefreshDataFormOrion();
+        if ($d->testConnectOrion()) {
+            $this->MODEL->GetEventsNumber();
+            $this->VIEW->setMODEL($this->MODEL);
+            $HTML = $this->VIEW->ViewNumberPlate();
+            $this->VIEW->printElement($HTML);
+        }else{
+            sleep(15); //нужно 180
+            $this->VIEW->printElement("<code></code><script>function loadscript() {} </script>");
+        }
     }
 
 
     public function GetEventsIpCamera()
     {
-        $this->setFormWidth(_G_session::widthMobile());
-        $this->defineTable();
-        $this->init();
+//        $this->setFormWidth(_G_session::widthMobile());
+//        $this->defineTable();
+//        $this->init();
 
         session_write_close();
-        $this->MODEL->GetEvents($this->DoorIndex);
+        $d = new RefreshDataFormOrion();
+        if ($d->testConnectOrion()) {
+            $this->MODEL->GetEvents($this->DoorIndex);
 
-        $data = $this->MODEL->getData();
-        $this->VIEW->setDataGridObject($data);
-        $greed = $this->VIEW->ViewPass();
-        $this->VIEW->printElement($greed);
+            $data = $this->MODEL->getData();
+            $this->VIEW->setDataGridObject($data);
+            $greed = $this->VIEW->ViewPass();
+            $this->VIEW->printElement($greed);
+        }else{
+            sleep(15); //нужно 180
+            $this->VIEW->printElement("<code></code><script>function loadscript() {} </script>");
+        }
     }
 
     public function getPhotoNumberplate()
     {
-        $d = new \DB\View\View_NumberCameraImage();
+        $d = new RefreshDataFormOrion();
+        if ($d->testConnectOrion()) {
+            $d = new \DB\View\View_NumberCameraImage();
 
-        $imageBlob = $d
-            ->where($d::id_event,$_REQUEST['id'])
-            ->where($d::f_main,1)
-            ->select($d::img)->fetchField($d::img);
+            $imageBlob = $d
+                ->where($d::id_event,$_REQUEST['id'])
+                ->where($d::f_main,1)
+                ->select($d::img)->fetchField($d::img);
 
-        $image = new \Imagick();
-        $image->readImageBlob($imageBlob);
-        $image->setImageFormat('jpeg');
-        $image->setImageCompression(\Imagick::COMPRESSION_JPEG);
-        $image->setImageCompressionQuality(50);
+            $image = new \Imagick();
+            $image->readImageBlob($imageBlob);
+            $image->setImageFormat('jpeg');
+            $image->setImageCompression(\Imagick::COMPRESSION_JPEG);
+            $image->setImageCompressionQuality(50);
 
-        $image->resizeImage(150,205, \Imagick::FILTER_UNDEFINED  , 1, true);
+            $image->resizeImage(150,205, \Imagick::FILTER_UNDEFINED  , 1, true);
 
 
-        header("content-type:image/jpeg");
-        echo $image->getImageBlob();
+            header("content-type:image/jpeg");
+            echo $image->getImageBlob();
+        }
     }
 
 
