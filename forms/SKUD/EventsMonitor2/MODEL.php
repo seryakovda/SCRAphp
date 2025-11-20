@@ -156,15 +156,13 @@ class MODEL extends \forms\FormsModel
 
     public function getListCameraEvent()
     {
-
-        $query = "SELECT        TOP (10) id, number, camera, ipCamera, xmlData, dateTimeEvent, dateTimeFile
-                    FROM            DSSL_EventNumberCamera
-                    WHERE        (ipCamera IN
-                                                 (SELECT        value
-                                                   FROM            STRING_SPLIT('$this->ipCameraTrigger', ',') AS STRING_SPLIT_1))
-                    order by dateTimeEvent DESC
+        $query ="
+            SELECT id, number, camera, ipCamera, xmlData, dateTimeEvent, dateTimeFile
+            FROM DSSL_EventNumberCamera
+            WHERE FIND_IN_SET(ipCamera, '$this->ipCameraTrigger') > 0
+            ORDER BY dateTimeEvent DESC
+            LIMIT 3
         ";
-
         $conn =  new Connect();
         return $conn->complexQuery($query);
     }
@@ -172,17 +170,23 @@ class MODEL extends \forms\FormsModel
 
     public function getDataByNumber($number)
     {
-        $query = "SELECT        TOP (50) dbo.PassTable.id_field, 
-                       PassTable_1.value as nameORG,
-                       dbo.Human.surname +' '+ dbo.Human.name +' '+ dbo.Human.patronName as FIO 
-                      
-            FROM            dbo.Car INNER JOIN
-                         dbo.PassTable ON dbo.Car.id = dbo.PassTable.id_RowField INNER JOIN
-                         dbo.PassHead ON dbo.PassTable.id_head = dbo.PassHead.id INNER JOIN
-                         dbo.Human ON dbo.PassHead.id_Human = dbo.Human.id LEFT OUTER JOIN
-                         dbo.PassTable AS PassTable_1 ON dbo.PassHead.id = PassTable_1.id_field AND 7 = PassTable_1.id_head
-            GROUP BY dbo.PassTable.id_field, PassTable_1.value, dbo.Human.surname, dbo.Human.name, dbo.Human.patronName, dbo.PassHead.del, dbo.PassHead.id_Human,  dbo.Car.stateNumber
-            HAVING        (dbo.PassTable.id_field = 2) AND (dbo.PassHead.del < 0) AND (dbo.Car.stateNumber = '$number')";
+        $query = "
+                SELECT 
+                    PassTable.id_field,
+                    PassTable_1.value as nameORG,
+                    CONCAT(Human.surname, ' ', Human.name, ' ', Human.patronName) as FIO 
+                FROM Car 
+                INNER JOIN PassTable ON Car.id = PassTable.id_RowField 
+                INNER JOIN PassHead ON PassTable.id_head = PassHead.id 
+                INNER JOIN Human ON PassHead.id_Human = Human.id 
+                LEFT OUTER JOIN PassTable AS PassTable_1 ON PassHead.id = PassTable_1.id_field AND 7 = PassTable_1.id_head
+                WHERE PassTable.id_field = 2 
+                    AND PassHead.del < 0 
+                    AND Car.stateNumber = '$number'
+                GROUP BY 
+                    PassTable.id_field, PassTable_1.value, Human.surname, Human.name, Human.patronName
+                LIMIT 50
+";
         $conn =  new Connect();
         return $conn->complexQuery($query);
     }

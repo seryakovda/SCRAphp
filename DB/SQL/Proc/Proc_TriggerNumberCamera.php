@@ -12,7 +12,7 @@ class Proc_TriggerNumberCamera extends ObjectDB
         $objectName = $this->getName();
         // отражался корректно
         $this->SQL_QUERY=/** @lang SQL */"
-            CREATE PROCEDURE $objectName(IN _ipCamera VARCHAR(16))
+            CREATE PROCEDURE $objectName(IN _ipCamera VARCHAR(200))
             BEGIN
                 DECLARE f INT DEFAULT 0;
                 DECLARE count_val INT DEFAULT 0;

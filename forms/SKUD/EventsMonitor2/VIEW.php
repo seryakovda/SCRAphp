@@ -110,14 +110,14 @@ class VIEW extends \forms\FormView
         $greed = new \views\Elements\Grid\Grid();
 
 
-//        $data = $this->MODEL->getDataByNumber($dataEventNumber['number']);
-//        $HTML .= $greed->GNew('ListCar')
-//            ->width(280)->row(15)
-//            ->ColumnID('id')
-//            //->Column('nameORG')->Column_Caption('Организация')->Column_Width(200)
-//            ->Column("FIO")->Column_Caption('ФИО')->Column_Width(300)->Column_textFontMicro()
-//            ->allInsertOff()
-//            ->GetTable($data);
+        $data = $this->MODEL->getDataByNumber($dataEventNumber['number']);
+        $HTML .= $greed->GNew('ListCar')
+            ->width(280)->row(15)
+            ->ColumnID('id')
+            //->Column('nameORG')->Column_Caption('Организация')->Column_Width(200)
+            ->Column("FIO")->Column_Caption('ФИО')->Column_Width(300)->Column_textFontMicro()
+            ->allInsertOff()
+            ->GetTable($data);
 
 
         return $HTML;

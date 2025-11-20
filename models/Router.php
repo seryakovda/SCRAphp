@@ -83,7 +83,7 @@ class Router
         //  ТО
         //  Сначало нужно отправить Скелет приложения
 
-        if (($detectedUser > 0) and (($this->route == "index") or ($this->route == "Authorization"))) {
+        if (($detectedUser != 0) and (($this->route == "index") or ($this->route == "Authorization"))) {
             $this->route = $_SESSION[Users::runDefaultScript];
             //$this->route = "SKUD\EventsMonitor";
         }
@@ -104,10 +104,8 @@ class Router
         // Если пользователь определён как пользователь системы (не сайта)
         // то смотрим в модель пользователя и читаем его свойства
 
-        if ($detectedUser > 0) {
-            $User = User::get();
-            $User->find($detectedUser);
-        }
+        $User = User::get();
+        $User->find($detectedUser);
 
         // возможно пользователю необходимо сменить пароль
 //        $renewPassword = $this->getRenewPassword();
@@ -122,56 +120,47 @@ class Router
         // мктод обработки, прав доступа, к методам конструктора форм
         // находится в разработке сейчас почти ни начто не влияет
 
-        $this->checkRight($detectedUser);
+        switch ($detectedUser) {
+            case 0: { // если пользователь ещё не ваторизован
+                switch ($this->route) {
+                    // задаём пустые переменные в массиве сессий
+                    // при следующем шаге загрузим  SkeletonApp а в неё уже Authorization
+                    case "index" :
+                        $_SESSION["id_user"] = 0;
+                        $_SESSION["idMenu"] = 0;
+                        break;
+                    case "Authorization":
+                        $run = new \forms\Authorization\Control();
+                        $run->run();
+                        break;
+                    case "SYS":
+                        $_SESSION["id_user"] = 0;
+                        $_SESSION["idMenu"] = 0;
+                        $modelExtension = array_key_exists("modelExtension",    $_SESSION)?     $_SESSION["modelExtension"]    : "";
 
-
-        // $this->f_grant получает значение в методе $this->checkRight($detectedUser);
-        if ($this->f_grant == 1) {
-            switch ($detectedUser) {
-                case 0: { // если пользователь ещё не ваторизован
-                    switch ($this->route) {
-                        // задаём пустые переменные в массиве сессий
-                        // при следующем шаге загрузим  SkeletonApp а в неё уже Authorization
-                        case "index" :
-                            $_SESSION["id_user"] = 0;
-                            $_SESSION["idMenu"] = 0;
-                            break;
-                        case "Authorization":
-                            $run = new \forms\Authorization\Control();
-                            $run->run();
-                            break;
-                        case "SYS":
-                            $_SESSION["id_user"] = 0;
-                            $_SESSION["idMenu"] = 0;
-                            $modelExtension = array_key_exists("modelExtension",    $_SESSION)?     $_SESSION["modelExtension"]    : "";
-
-                            $this->runInstruction($modelExtension);
-                            break;
-                    }
-                    break;
+                        $this->runInstruction($modelExtension);
+                        break;
                 }
-                default: {
-                    //  срабатывание при условии блокировки базы
-                    switch ($this->route) {
-                        case "Блокировка_базы" : {
-                            \views\Views::MsgBlock("Внимание", "В данное время производится глобальная операция, в связи с этим доступ Ограничен");
-                            break;
-                        }
-                        case "SYS":
-                            $modelExtension = array_key_exists("modelExtension",    $_SESSION)?     $_SESSION["modelExtension"]    : "";
-                            $this->runInstruction($modelExtension);
-                            break;
-                        // Погнали в метод выполнения
-                        default: {
-                            $this->runInstruction();
-                            break;
-                        }
+                break;
+            }
+            default: {
+                //  срабатывание при условии блокировки базы
+                switch ($this->route) {
+                    case "Блокировка_базы" : {
+                        \views\Views::MsgBlock("Внимание", "В данное время производится глобальная операция, в связи с этим доступ Ограничен");
+                        break;
+                    }
+                    case "SYS":
+                        $modelExtension = array_key_exists("modelExtension",    $_SESSION)?     $_SESSION["modelExtension"]    : "";
+                        $this->runInstruction($modelExtension);
+                        break;
+                    // Погнали в метод выполнения
+                    default: {
+                        $this->runInstruction();
+                        break;
                     }
                 }
             }
-        } else {
-            \views\Views::MsgBlock("Внимание", "Нет доступа.");
-
         }
     }
 
@@ -187,26 +176,6 @@ class Router
             return 0;
     }
 
-    /**
-     * @param $detectedUser
-     * int ID пользователя у которого нужно проверить права
-     */
-    private function checkRight($detectedUser)
-    {
-        /*
-        $conn = new \DB\Connect();
-        $resSecurity = $conn->table('proc_get_right_user')
-            ->set("route", $this->route)
-            ->set("r1", $this->r1)
-            ->set('user', $detectedUser)
-            ->SQLExec()
-            ->fetch();
-
-        $this->f_grant = $resSecurity['f_grant'];
-        $this->checkMonth = $resSecurity['checkMonth'];
-        */
-        $this->f_grant = 1;
-    }
 
     private function runInstruction($modelExtension = "")
     {

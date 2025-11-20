@@ -44,8 +44,7 @@
         JsonSTR_listURL = '<?php print $this->listURL; ?>'
         _G_value0 = JSON.parse(JsonSTR_listURL);
         setTimeout(GetEvents, 2000);
-        //setTimeout(GetEventsNumber, 2000);
-
+        setTimeout(GetEventsNumber, 2000);
         let rel = setInterval(reload_camera, 60000);
 
         updateTime();

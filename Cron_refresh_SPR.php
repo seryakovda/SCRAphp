@@ -11,3 +11,11 @@ $R = new models\RefreshDataFormOrion();
 
 $R->updateSPR(\DB\Table\GrAccess::getName());
 $R->updateSPR(\DB\Table\AcessPoint::getName());
+
+$R = new models\RefreshDataFormPS();
+if ($R->testConnection()){
+    $R->getSession();
+    if ($R->authorizationOnThePS()){
+        $R->getCarPrivilege();
+    }
+}

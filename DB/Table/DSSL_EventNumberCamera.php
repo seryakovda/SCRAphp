@@ -21,6 +21,7 @@ class DSSL_EventNumberCamera extends \DB\Table
 
     const dateTimeFile = 'dateTimeFile';
 
+    const f_upload = 'f_upload';
 
     public function initColumn($childClass = '')
     {
@@ -38,9 +39,11 @@ class DSSL_EventNumberCamera extends \DB\Table
         $this->declare_type($this::xmlData,         Type::longtext);
         $this->declare_type($this::dateTimeEvent,   Type::datetime);
         $this->declare_type($this::dateTimeFile,    Type::datetime);
+        $this->declare_type($this::f_upload,        Type::int);
 
         $this->declare_defaultValue($this::xmlData,"");
         $this->declare_defaultValue($this::dateTimeEvent,'CURRENT_TIMESTAMP');
+        $this->declare_defaultValue($this::f_upload,'0');
 
         $this->declare_nonclusteredIndex("dateTimeEvent",$this::dateTimeFile);
         $this->declare_nonclusteredIndex("number",$this::number);
