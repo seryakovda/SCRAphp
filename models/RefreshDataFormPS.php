@@ -6,6 +6,7 @@ namespace models;
 
 use DB\Connect;
 use DB\Connection;
+use DB\Table\CarPrivilege;
 use DB\Table\ConnectionSettings;
 use DB\Table\AcessPoint;
 use DB\Table\AcessPoint_TMP;
@@ -21,6 +22,12 @@ use DB\Table\pMark_TMP;
 use DB\Table\security_userSettings;
 use Properties\Security;
 use views\mPrint;
+use DB\Table\Human;
+use DB\Table\PassFields;
+use DB\Table\PassStatus;
+use DB\Table\PassTable;
+use DB\Table\PassHead;
+use DB\Table\Car;
 
 class RefreshDataFormPS
 {
@@ -159,5 +166,86 @@ class RefreshDataFormPS
             $d->insert();
         }
 
+    }
+
+    public function getCarPrivilege()
+    {
+        $jsonData = $this->curl_request_async(Array(
+            "r0"=>"SYS",
+            "r1"=>"getCarPrivilege",
+            "sessionHandle"=>$_SESSION['sessionHandle'],
+        ));
+        $data = json_decode($jsonData,true);
+
+        foreach ($data as $row){
+            $d = new CarPrivilege();
+            $d->where($d::stateNumber,$row[$d::stateNumber])->delete();
+            $d = null;
+
+            $d = new CarPrivilege();
+            foreach ($row as $field => $value){
+                $d->set($field,$value);
+            }
+            $d->insert();
+        }
+    }
+
+    /**
+     * @param $nameTable string имя талицы БД PassFields,PassHead и т.д ВАЖНО должно содержать id
+     * @return false|mixed
+     */
+    public function getDataTable($nameTable)
+    {
+        $conn = new Connect();
+        // получаем последний Id который имеем в нашей базе
+        $lastId = $conn->complexQuery("select ifnull(max(id),0) as lastId from $nameTable")->fetchField("lastId");
+
+        $nameTable = "\DB\Table\\$nameTable";
+
+        $jsonData = $this->curl_request_async(Array(
+            "r0"=>"SYS",
+            "r1"=>"getDataTable",
+            "sessionHandle"=>$_SESSION['sessionHandle'],
+            "nameTable"=>$nameTable,
+            "lastId"=>$lastId,
+        ));
+        $data = json_decode($jsonData,true);
+        mPrint::R("Статус ".$data['status'],mPrint::YELLOW);
+        if ($data['status'] == "Job"){
+            foreach ($data['data'] as $row){
+                $d = new $nameTable();
+                foreach ($row as $field => $value){
+                    if ($field == 'id')
+                        $retId = $value;
+                    $d->set($field,$value);
+                }
+                try{ // вдруг данные уже есть
+                    $d->insert();
+                    mPrint::R("|",mPrint::GREEN,false);
+                }catch (\PDOException $e){
+                    mPrint::R("Ошибка записи id= $retId таблицы $nameTable", mPrint::GREEN);
+                }
+            }
+            mPrint::R("ОК",mPrint::BLUE);
+            return $retId;
+        }else{
+            return false;
+        }
+
+    }
+
+    public function sendEventCamera($sendArray)
+    {
+        $newSendArray = Array(
+            "r0"=>"SYS",
+            "r1"=>"sendEventCamera",
+            "sessionHandle"=>$_SESSION['sessionHandle'],
+        );
+        foreach($sendArray as $key => $value){
+            $newSendArray[$key] = $value;
+        }
+        $jsonData = $this->curl_request_async($newSendArray);
+
+        return $jsonData;
     }
 }

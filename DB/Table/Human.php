@@ -56,7 +56,7 @@ class Human extends \DB\Table
         // обязательно для формирования структуры массива
         parent::initColumn(__CLASS__);
 
-        $this->identifierColumn($this::id);
+        //$this->identifierColumn($this::id);
         $this->declare_primaryIndex($this::id);
 
         $this->declare_type($this::id,              Type::int);
@@ -112,14 +112,14 @@ class Human extends \DB\Table
         $this->deleteDataFor_defaultRows = false;
         return array(
             array(
-                $this::id => 1,
+                $this::id => -1,
                 $this::surname => 'admin',
                 $this::name => 'admin',
                 $this::patronName => 'admin',
 
             ),
             array(
-                $this::id => 2,
+                $this::id => -2,
                 $this::surname => 'user',
                 $this::name => 'user',
                 $this::patronName => 'user',

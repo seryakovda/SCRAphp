@@ -44,7 +44,7 @@ class Control extends \forms\FormsControl
     {
 //        $this->setTable(View_Orion_getEvents::getName());
 //        $this->setColumnID(View_Orion_getEvents::id);
-//        $this->setTOP(' (4) ');
+        $this->MODEL->setTOP(' (3) ');
 //        $this->setOrderString(View_Orion_getEvents::TimeVal." DESC");
     }
 
@@ -111,9 +111,9 @@ class Control extends \forms\FormsControl
 
     public function GetEventsIpCamera()
     {
-//        $this->setFormWidth(_G_session::widthMobile());
-//        $this->defineTable();
-//        $this->init();
+        $this->setFormWidth(_G_session::widthMobile());
+        $this->defineTable();
+        $this->init();
 
         session_write_close();
         $d = new RefreshDataFormOrion();
@@ -134,7 +134,7 @@ class Control extends \forms\FormsControl
     {
         $d = new RefreshDataFormOrion();
         if ($d->testConnectOrion()) {
-            $d = new \DB\View\View_NumberCameraImage();
+            $d = new \DB\Table\NumberCameraImage();
 
             $imageBlob = $d
                 ->where($d::id_event,$_REQUEST['id'])

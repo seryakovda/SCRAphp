@@ -635,10 +635,6 @@ abstract class FormsControl
         print $report->getGUIDReport();
     }
 
-    public function setTOP($TOP)
-    {
-        $this->MODEL->TOP = $TOP;
-    }
 
     public function includeHtml()
     {
