@@ -100,6 +100,10 @@ if ($camera != 'None'){
 
             }
         }
+        // Запуск фоном
+        $dir = \Properties\Security::DIR();
+        $command = "php $dir/subroutine_uploadEventCamera.php > /dev/null &";
+        exec($command);
     }
 
 }
