@@ -182,27 +182,51 @@ class VIEW extends \forms\FormView
 
     public function VideoStreamWindow()
     {
-        $data = $this->MODEL->getListCameraForVideoStream();
+
         // http://10.13.18.154:555/Ea8fKquV?container=mjpeg&stream=main
         $HTML = '';
-        $win = new Window();
+        $widthMain = (_G_session::widthMobile() - 530); // оставшийся размер от специальных окон
         $height = $this->getHeight();
-        $HTML = $HTML .  $win->set()->nameId("ModifyDisplay")
+        $this->listURL = Array();
+
+
+
+        if ($listScreenCamera = $this->MODEL->getListScreenCamera()){
+            foreach ($listScreenCamera as $key => $item){
+                $HTML .= $this->BTN
+                    ->set($item['caption'])
+                    ->width(50)
+                    ->height(50)
+                    ->floateLeft()
+                    ->horizontalPosCenter()
+                    ->func("setIndexScreenCamera({$item['id']})") // nameVar
+                    ->get();
+            }
+        }
+        $win = new Window();
+        $HTML =  $win->set()->nameId("ModifyDisplay")
                 ->headSizeNone()
                 ->shadowSmall()
                 ->height($height)
-                ->width(130)
+                ->width(70)
                 ->setBackgroundCssClass('')
                 ->floatLeft()
-                ->content('Modify Display')
+                ->content($HTML)
                 ->marginMainDIV_OFF()
                 ->get();
 
         $i = 1;
-        while ($res = $data->fetch()){
+
+
+        $dataArr = $this->MODEL->getListCameraForVideoStream();
+        foreach ($dataArr as $key => $res ){
             $ipS = $res['cameraServerIp'];
             $canal = $res['cameraChannelGuid'];
-            $width = (_G_session::widthMobile() - 590)/ 2; // оставшийся размер от специальных окон
+            $width = $widthMain;
+            $x = $res['x'];
+            $command = '$width = '."(int) ($widthMain $x);";
+            eval($command);
+
             $urlImage = "http://$ipS:555/$canal?container=mjpeg&amp;stream=main";
             $this->listURL[] = $urlImage;
             $img = "<img id = \"imgCamV$i\" width=\"$width\" src=\"$urlImage\">";

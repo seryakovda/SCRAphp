@@ -15,6 +15,7 @@ use DB\Table\GrAccess_TMP;
 
 use DB\Table\LastId;
 use DB\Table\nXms_Excel;
+use DB\Table\Orion_settingsFor_pLogData;
 use DB\Table\pList;
 use DB\Table\pList_TMP;
 use DB\Table\pMark;
@@ -144,6 +145,43 @@ class RefreshDataFormPS
 
     }
 
+    public function prepare_Orion_settingsFor_pLogData()
+    {
+        $d = new security_userSettings();
+        $data = $d->select();
+        $retD = Array();
+        while ($row = $data->fetch()){
+            $retD[$row[$d::nameVar]] = $row[$d::value];
+        }
+
+        $d1 = new Orion_settingsFor_pLogData();
+        $d1->delete();
+        $d1
+            ->set($d1::id,0)// выход
+            ->set($d1::DoorIndex,$retD['orionReader_DoorIndex'])
+            ->set($d1::ZoneIndex,$retD['orionReader_ZoneIndex'])
+
+            ->set($d1::ReaderIndex,$retD['orionReader_DevItems_1'])
+            ->set($d1::IndexZone,$retD['orionReader_DevItems_1'])
+
+            ->set($d1::RazdIndex,"0")
+            ->set($d1::Mode,2)
+            ->set($d1::Event,28)
+            ->insert();
+        $d1
+            ->set($d1::id,1)// выход
+            ->set($d1::DoorIndex,$retD['orionReader_DoorIndex'])
+            ->set($d1::ZoneIndex,$retD['orionReader_ZoneIndex'])
+
+            ->set($d1::ReaderIndex,$retD['orionReader_DevItems_2'])
+            ->set($d1::IndexZone,$retD['orionReader_DevItems_2'])
+
+            ->set($d1::RazdIndex,"0")
+            ->set($d1::Mode,1)
+            ->set($d1::Event,28)
+            ->insert();
+
+    }
 
     public function getExcel()
     {

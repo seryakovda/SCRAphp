@@ -10,7 +10,9 @@ namespace forms\SYS;
 use DB\Connect;
 use DB\Connection;
 use DB\Table\ConnectionSettings;
+use DB\Table\Orion_regKey;
 use DB\Table\PassHead;
+use DB\Table\PassTable;
 use DB\Table\pList;
 use DB\Table\pMark;
 use models\_G_session;
@@ -31,6 +33,33 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         $this->ConnOrion["password"] =    $data[$d::pass_DbOrion];
     }
 
+    public function regKey($qrCode,$inOut,$typeCode)
+    {
+        if ($typeCode == 'FR_Code'){
+            $qrCode = $this->extractUidFromAsciiOrHex($qrCode);
+        }
+        if ($typeCode == 'QR_Code'){
+            //$qrCode = (int)$qrCode;
+            $qrCode =dechex($qrCode);
+            $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
+            $qrCode = strtoupper($qrCode);
+        }
+
+        $d = new Orion_regKey();
+        $d
+            ->set($d::keyCard,$qrCode)
+            ->set($d::inOut_,$inOut)
+            ->insert();
+    }
+
+    public function sendKey()
+    {
+
+        $dir = \Properties\Security::DIR();
+        $command = "php $dir/subroutine_uploadKeyOrion.php > /dev/null &";
+        exec($command);
+    }
+
     public function getDataByQrCode($qrCode,$typeCode)
     {
         if ($typeCode == 'FR_Code'){
@@ -39,31 +68,115 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         if ($typeCode == 'QR_Code'){
             //$qrCode = (int)$qrCode;
             $qrCode =dechex($qrCode);
+            $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
+            $qrCode = strtoupper($qrCode);
         }
         $value = "Не найдено";
+
+        $status = "2"; // Не найден в системе
 
         $d0 = new pMark();
         $data00 = $d0->where($d0::CodeP_HEX,$qrCode)
             ->select();
         if ($data0 = $data00->fetch()){
-
-            \models\ErrorLog::saveError($data0);
-
+            $status = $data0[$d0::Config] == 128 ? "1" : "0";
+            $pMarkID = $data0[$d0::ID];
             $d1 = new pList();
             $data1 = $d1->where($d1::ID,$data0[$d0::Owner])
                 ->select();
             if ($res = $data1->fetch()){
                 $value = $res[$d1::Name];
+                $ID = $res[$d1::ID];
             }
         }
 
 
+        $color = "#5e8af8";
+
         $ret = Array();
+        $sessionHandle = session_id();
+        if ($value == "Не найдено"){
+            $value1 = "false";
+            $color = "#c31e1e"; // если не найден в системе то красный
+        }else{
+            $value1 = "r0=SYS&r1=getPhoto&idPhoto=$ID&sessionHandle=$sessionHandle";
+        }
+
+        if ($status == "0")  // если заблокирован пропуск то меняем цвет
+            $color = "#ec702e";
+
         $ret[] = Array(
-            'name'      =>  'Номер пропуска',
-            'value'     =>  $value . $qrCode,
-            'color'     => "#5e8af8",
+            'name'      =>  $status,
+            'value'     =>  $value1,
+            'color'     => $color,
         );
+
+        if ($value != "Не найдено"){
+            $name1 = $res[$d1::Name];
+            $name2 = $res[$d1::FirstName];
+            $name3 = $res[$d1::MidName];
+            $ret[] = Array(
+                'name'      =>  'ФИО',
+                'value'     =>  "$name1 $name2 $name3",
+                'color'     => "#f7ffd4",
+            );
+
+
+            $var = $d1::CompN;
+            if ($res[$var] != null ) {
+                $ret[] = array(
+                    'name' => 'Организация',
+                    'value' => "$res[$var]",
+                    'color' => "#daeaff",
+                );
+            };
+
+            $var = $d1::DivN;
+            if ($res[$var] != "" ) {
+                $ret[] = array(
+                    'name' => 'Подразделение',
+                    'value' => "$res[$var]",
+                    'color' => "#daeaff",
+                );
+            }
+
+            $var = $d1::name_pPost;
+            if ($res[$var] != "" ) {
+                $ret[] = array(
+                    'name' => 'Должность',
+                    'value' => "$res[$var]",
+                    'color' => "#daeaff",
+                );
+            }
+
+
+        }
+
+        $car = false;
+        if ($typeCode == 'QR_Code'){
+            $d2 = new PassHead();
+            if ($PH = $d2->where($d2::id_Orion,$pMarkID)->select()->fetch()){
+                \models\ErrorLog::saveError($PH);
+
+                $id_PH = $PH[$d2::id];
+                $d3 = new PassTable();
+                $data3 = $d3->where($d3::id_head,$id_PH)->where($d3::id_field,2)->select();
+
+                while ($res3 = $data3->fetch()){
+                    if ($car === false)
+                        $car = "";
+                    $car = $car . " " . $res3[$d3::value];
+                }
+            }
+        }
+
+        if ($car !== false){
+            $ret[] = array(
+                'name' => 'Транспортные средства',
+                'value' => "$car",
+                'color' => "#c5f7cc",
+            );
+        }
 //
 //        $d = new \DB\View\View_PassHead();
 //        $res = $d

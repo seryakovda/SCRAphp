@@ -85,6 +85,7 @@ class PassHead extends \DB\Table
         $this->declare_nonclusteredIndex('id',$this::id);
 
         $this->declare_nonclusteredIndex('qrCode',$this::qrCode);
+        $this->declare_nonclusteredIndex('id_Orion',$this::id_Orion);
 
 
         $this->declare_type($this::del,        Type::int);

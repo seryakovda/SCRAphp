@@ -118,7 +118,8 @@ while ($job){ // крутимся пока всё не обработаем
         if ($R->testConnection()){
             $R->getSession();
             if ($R->authorizationOnThePS()){
-                if ($R->sendEventCamera($arraySend) == "OK"){
+                $res = $R->sendEventCamera($arraySend);
+                if ($res == "OK"){
                     mPrint::R("OK",mPrint::YELLOW);
                     if ($minId + $TOP < $maxId){
                         $d2 ->where($d2::id,$minId)
@@ -128,6 +129,9 @@ while ($job){ // крутимся пока всё не обработаем
                             ->where($d2::id,$minId)
                             ->update();
                     }
+
+                }else{
+                    mPrint::R($res,mPrint::RED);
 
                 }
 

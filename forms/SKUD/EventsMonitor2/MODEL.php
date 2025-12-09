@@ -5,7 +5,9 @@ use DB\Connect;
 use DB\Connection;
 use DB\Table\ConnectionSettings;
 use DB\Table\nXms_Excel;
+use DB\Table\security_userSettings;
 use \DB\View\View_Orion_getEvents;
+use mysql_xdevapi\Exception;
 use Properties\Security;
 
 
@@ -13,6 +15,10 @@ class MODEL extends \forms\FormsModel
 {
     private $ipCameraTrigger;
     private $listCameraViewIp;
+
+    private $arrScreenCamera;
+
+    private $json  = false;
 
     public $ConnOrion = Array();
 
@@ -36,6 +42,98 @@ class MODEL extends \forms\FormsModel
         $this->listCameraViewIp = $listCameraViewIp;
     }
 
+
+
+    /**
+     * @param mixed $arrSreenCamera
+     */
+    public function setArrScreenCamera($arrScreenCamera): void
+    {
+        $this->json = false;
+        try{
+            if (strpos($arrScreenCamera, '{') !== false){
+                $this->arrScreenCamera = json_decode($arrScreenCamera,true);
+                $this->json = true;
+            }
+        }
+        catch (\TypeError $e) {}
+        catch (Exception $e)  {}
+
+        if ($this->json === false){
+            $this->arrScreenCamera = explode(',',$arrScreenCamera);
+        }
+    }
+
+
+    public function getMinIndexScreenCamera()
+    {
+        $minKey = 0;
+        if ($this->json){
+            reset($this->arrScreenCamera);
+            $minKey = key($this->arrScreenCamera);
+        }
+
+        return $minKey;
+    }
+
+
+
+    public function getListCameraForVideoStream()
+    {
+
+        if ($this->json === false){
+            $readArray = $this->arrScreenCamera;//если не json то в настройках простая строка с перечисленными ip через запятую
+        }else{
+            $readArray = $this->arrScreenCamera[$_SESSION['indexScreenCamera']];
+        }
+
+        $retArray = Array();
+        \models\ErrorLog::saveError($readArray,typeSaveMode: "w+");
+        foreach ($readArray['listIP'] as $key => $item){
+            \models\ErrorLog::saveError("item");
+            \models\ErrorLog::saveError($item);
+            $arr = Array();
+            if ($this->json){
+                $ip = $item['IP'];
+                $arr['x'] = $item['x'];
+                $arr['y'] = $item['y'];
+            }else{
+                $ip = $item;
+                $arr['x'] = "/100*50";
+                $arr['y'] = "/100*50";
+            }
+            \models\ErrorLog::saveError("IP = $ip");
+            $d = new nXms_Excel();
+            if($data = $d->where($d::ip,$ip)->select()->fetch()){
+                $field = $d::cameraServerIp;
+                $arr[$field] = $data[$field];
+
+                $field = $d::cameraChannelGuid;
+                $arr[$field] = $data[$field];
+
+                $retArray[] = $arr;
+            }
+        }
+        return $retArray;
+    }
+
+
+    public function getListScreenCamera()
+    {
+        $retArr = false;
+        if ($this->json ){
+            $retArr = Array();
+            $i = 1;
+            foreach ($this->arrScreenCamera as $key => $value){
+                $retArr[] = Array (
+                    "caption"=>$i,
+                    "id"=>$value['id']
+                );
+                $i ++ ;
+            }
+        }
+        return $retArr;
+    }
 
     public function getData_event($DoorIndex)
     {
@@ -191,14 +289,5 @@ class MODEL extends \forms\FormsModel
         return $conn->complexQuery($query);
     }
 
-    public function getListCameraForVideoStream()
-    {
-        $query = "SELECT *
-                    FROM nXms_Excel
-                    WHERE FIND_IN_SET(ip, '$this->listCameraViewIp') > 0;
-        ";
-        $conn =  new Connect();
-        return $conn->complexQuery($query);
-    }
 
 }

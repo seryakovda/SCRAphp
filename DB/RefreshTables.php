@@ -905,11 +905,11 @@ class RefreshTables
         if ($fieldsProject['identifierColumn'] !== false) {
             if ($this->MSSQL == Security::TYPE_dB_MS_SQL) {
                 $query = "
-                        set identity_insert dbo.{$this->nameTable}__TMP__ ON;
+                        set identity_insert dbo.{$this->nameTable} ON;
                         
                         $query;
                         
-                        set identity_insert dbo.{$this->nameTable}__TMP__ OFF;
+                        set identity_insert dbo.{$this->nameTable} OFF;
                         ";
             }
             if ($this->MSSQL == Security::TYPE_dB_My_SQL) {

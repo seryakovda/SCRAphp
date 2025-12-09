@@ -142,6 +142,7 @@ class User
                     if (array_key_exists('sateGetDate',$_SESSION) === false){
                         $RD->getSettings();
                         $_SESSION['sateGetDate'] = 1;
+                        $RD->prepare_Orion_settingsFor_pLogData(); //подготовка таблицы для записи в pLogData
                     }
             }
 
