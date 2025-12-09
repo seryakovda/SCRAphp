@@ -28,14 +28,17 @@ class Control extends \forms\FormsControl
         $this->DoorIndex = $user->data['US_DoorIndexFromOrion'];
 
         $this->ipCameraTrigger = array_key_exists('ListIpCameraForTrigger',$user->data) ? $user->data['ListIpCameraForTrigger'] : false;
-        $this->VIEW->setIpCameraTrigger($this->ipCameraTrigger);
-
-        $this->ipCameraView = $user->data['ListIpCameraForView'];
 
         if ($this->ipCameraTrigger !== false)
             $this->MODEL->setIpCameraTrigger($this->ipCameraTrigger);
 
-        $this->MODEL->setListCameraViewIp($this->ipCameraView);
+
+
+        $this->MODEL->setArrScreenCamera($user->data['ListIpCameraForView']);
+
+        if (!array_key_exists('indexScreenCamera', $_SESSION)){
+            $_SESSION['indexScreenCamera'] = $this->MODEL->getMinIndexScreenCamera();
+        }
 
         parent::__construct();
     }
@@ -178,5 +181,10 @@ class Control extends \forms\FormsControl
 
             echo $image->getImageBlob();
         }
+    }
+
+    public function setIndexScreenCamera()
+    {
+        $_SESSION['indexScreenCamera'] = $_REQUEST['indexScreenCamera'];
     }
 }

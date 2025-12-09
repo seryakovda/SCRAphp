@@ -6,3 +6,6 @@
 # каждые 2 минуты обновление данных с Pass-system
 */2     *    * * *  php /var/www/html/scra/Cron_refresh_Pass.php NoClear > /dev/null 2>&1
 0       6    * * *  php /var/www/html/scra/Cron_refresh_Pass.php Clear > /dev/null 2>&1
+
+# номерная камера
+*/1    * * * * php /var/www/html/dev-pass-system/Cron_processingNumberCameraData.php > /dev/null 2>&1

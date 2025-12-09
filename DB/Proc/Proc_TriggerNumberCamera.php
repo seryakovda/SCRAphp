@@ -8,6 +8,6 @@ class Proc_TriggerNumberCamera extends \DB\SQL\Proc\Proc_TriggerNumberCamera
     {
         return $this
 	            ->set('ipCamera',$ipCamera)
-            ->SQLExec();
+            ->SQLExec_MySQL();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace forms\SYS;
 
+use DB\Table\pList;
 use DB\Table\Users;
 use \models\_G_session;
 use \models\ErrorLog;
@@ -23,8 +24,12 @@ class Control_mobile_SCRA_01 extends Control
 
     public function getDataByQrCode()
     {
-        \models\ErrorLog::saveError("getDataByQrCode");
-        //$this->MODEL->registrationScanQrCode($_REQUEST['qrCode']);
+        \models\ErrorLog::saveError($_REQUEST,typeSaveMode: "w+");
+
+        $this->MODEL->regKey($_REQUEST['qrCode'],$_REQUEST['inOut'],$_REQUEST['typeCode']);
+        $this->MODEL->sendKey();
+
+        //$this->MODEL->registrationScanQrCode();
         $answer = $this->MODEL->getDataByQrCode($_REQUEST['qrCode'],$_REQUEST['typeCode']);
         \models\ErrorLog::saveError($answer);
         header("content-type:application/json");
@@ -35,5 +40,14 @@ class Control_mobile_SCRA_01 extends Control
     {
         \models\ErrorLog::saveError($_REQUEST['binaryData'],"sendBinaryData.txt");
 //        \models\ErrorLog::saveError($this->MODEL->getEmarin($_REQUEST['binaryData']),"sendBinaryData.txt");
+    }
+
+    public function getPhoto()
+    {
+        $d = new pList();
+        $image = $d->where($d::ID,$_REQUEST['idPhoto'])->select($d::Picture)->fetchField($d::Picture);
+        header("content-type:image/jpeg");
+        header("Content-Length:" .(string)(strlen($image)) );
+        echo $image;
     }
 }

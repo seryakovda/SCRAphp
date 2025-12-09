@@ -24,7 +24,7 @@ class security_userSettings extends \DB\Table
         $this->declare_type($this::id_user, Type::bigint);
         $this->declare_type($this::nameVar, Type::varchar,50);
         $this->declare_type($this::id,      Type::int);
-        $this->declare_type($this::value,   Type::varchar,50);
+        $this->declare_type($this::value,   Type::varchar,2000);
 
     }
 

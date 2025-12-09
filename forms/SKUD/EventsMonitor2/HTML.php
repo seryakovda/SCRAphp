@@ -119,4 +119,22 @@
         });
     }
 
+
+    function setIndexScreenCamera(index)
+    {
+        _G_Ajax({
+            type: "POST",
+            url: "index_ajax.php",
+            data: {
+                parent:"SKUD",
+                r0: "EventsMonitor2",
+                r1: "setIndexScreenCamera",
+                indexScreenCamera:index,
+            },
+            dataType: 'text',
+            success: function () {
+                location.reload();
+            }
+        });
+    }
 </script>

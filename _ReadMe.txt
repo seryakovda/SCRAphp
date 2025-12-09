@@ -157,6 +157,14 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
+	    -- Проверка на рекурсию (если другие триггеры меняют GrAccess)
+    IF TRIGGER_NESTLEVEL(OBJECT_ID('[dbo].[GrAccess]')) > 1
+        RETURN
+
+    -- Быстрая проверка изменений
+    IF NOT EXISTS(SELECT 1 FROM inserted) AND NOT EXISTS(SELECT 1 FROM deleted)
+        RETURN
+
     declare @id_max int
     select  @id_max  = isnull(MAX (id),0)+1 from TRIGGER_SPR
 	insert into TRIGGER_SPR (id,name_table)
@@ -175,6 +183,14 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
+
+	    -- Проверка на рекурсию (если другие триггеры меняют GrAccess)
+    IF TRIGGER_NESTLEVEL(OBJECT_ID('[dbo].[GrAccess]')) > 1
+        RETURN
+
+    -- Быстрая проверка изменений
+    IF NOT EXISTS(SELECT 1 FROM inserted) AND NOT EXISTS(SELECT 1 FROM deleted)
+        RETURN
 
     declare @id_max int
     select  @id_max  = isnull(MAX (id),0)+1 from TRIGGER_SPR
