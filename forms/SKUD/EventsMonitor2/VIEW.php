@@ -153,26 +153,50 @@ class VIEW extends \forms\FormView
 
 
         if ($this->ipCameraTrigger !== false){
-            $this->windowContent = $this->windowContent . $winCamT->set()->nameId('winCamT')
+
+            $ELM = new \views\Elements\VElements();
+            $div = $ELM->tag('div')
+                ->setStyle(
+                "width:".(_G_session::widthMobile() - 445)."px;".
+                "height:".(_G_session::heightMobile()-820)."px;".
+                "overflow-y: scroll"
+                )
+                ->setId("winCamT")
+                ->setCaption($this->ViewNumberPlate())
+                ->getHTTPTag();
+            $this->windowContent = $this->windowContent . $winCamT->set()->nameId('winCamT0')
                     ->width(_G_session::widthMobile() - 435)
-                    ->height(_G_session::heightMobile()-820)
+                    ->height(_G_session::heightMobile()-820,"height:")
                     ->setBackgroundCssClass('')
                     ->headSizeNone()
                     ->shadowSmall()
                     ->floatLeft()
+                    ->style("overflow-y: scroll")
                     ->marginMainDIV_OFF()
-                    ->content($this->ViewNumberPlate())
+                    ->content($div)
                     ->get();
         }
 
 
+        $win = new Window();
+        $this->windowContent = $this->windowContent .  $win->set()->nameId("DateTime")
+                ->headSizeNone()
+                ->shadowNone()
+                ->height(25)
+                ->width(420)
+                ->setBackgroundCssClass('backgroundDatetime')
+                ->content('Date time')
+                ->marginMainDIV_OFF()
+                ->style("text-align: center")
+                ->get();
 
         $this->windowContent = $this->windowContent .  $winDor->set()->nameId('winDor')
             ->width( 420)
-            ->height(_G_session::heightMobile()-20,"height:")
+            ->height(_G_session::heightMobile()-45,"height:")
             ->setBackgroundCssClass('')
             ->headSizeNone()
             ->shadowSmall()
+                ->marginMainDIV_OFF()
             ->style("display:block; overflow-y: auto;")
             ->content($this->ViewPass())
             ->get();
@@ -242,18 +266,6 @@ class VIEW extends \forms\FormView
                     ->get();
             $i++;
         }
-
-        $win = new Window();
-        $HTML = $HTML .  $win->set()->nameId("DateTime")
-                ->headSizeNone()
-                ->shadowNone()
-                ->height(30)
-                ->width(1000)
-                ->setBackgroundCssClass('backgroundDatetime')
-                ->floatLeft()
-                ->content('Date time')
-                ->marginMainDIV_OFF()
-                ->get();
         return $HTML;
     }
 
