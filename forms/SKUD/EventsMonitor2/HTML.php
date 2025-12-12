@@ -23,9 +23,10 @@
 
     }
     .backgroundDatetime{
-        font-size: 22px;
+        font-size: 26px;
         font-weight: bold;
         color: blue;
+        font-family: monospace;
     }
 </style>
 

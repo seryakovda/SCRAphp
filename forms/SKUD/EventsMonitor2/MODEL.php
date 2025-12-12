@@ -88,10 +88,7 @@ class MODEL extends \forms\FormsModel
         }
 
         $retArray = Array();
-        \models\ErrorLog::saveError($readArray,typeSaveMode: "w+");
         foreach ($readArray['listIP'] as $key => $item){
-            \models\ErrorLog::saveError("item");
-            \models\ErrorLog::saveError($item);
             $arr = Array();
             if ($this->json){
                 $ip = $item['IP'];
@@ -102,7 +99,6 @@ class MODEL extends \forms\FormsModel
                 $arr['x'] = "/100*50";
                 $arr['y'] = "/100*50";
             }
-            \models\ErrorLog::saveError("IP = $ip");
             $d = new nXms_Excel();
             if($data = $d->where($d::ip,$ip)->select()->fetch()){
                 $field = $d::cameraServerIp;
@@ -259,7 +255,7 @@ class MODEL extends \forms\FormsModel
             FROM DSSL_EventNumberCamera
             WHERE FIND_IN_SET(ipCamera, '$this->ipCameraTrigger') > 0
             ORDER BY dateTimeEvent DESC
-            LIMIT 3
+            LIMIT 10
         ";
         $conn =  new Connect();
         return $conn->complexQuery($query);

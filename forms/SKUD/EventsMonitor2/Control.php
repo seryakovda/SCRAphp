@@ -1,6 +1,7 @@
 <?php
 namespace forms\SKUD\EventsMonitor2;
 
+use DB\Connection;
 use DB\Proc\Proc_RefreshDateEnd;
 use DB\Table\pList;
 use \DB\View\View_Orion_getEvents;
@@ -29,8 +30,11 @@ class Control extends \forms\FormsControl
 
         $this->ipCameraTrigger = array_key_exists('ListIpCameraForTrigger',$user->data) ? $user->data['ListIpCameraForTrigger'] : false;
 
-        if ($this->ipCameraTrigger !== false)
+        if ($this->ipCameraTrigger !== false){
             $this->MODEL->setIpCameraTrigger($this->ipCameraTrigger);
+            $this->VIEW->setIpCameraTrigger($this->ipCameraTrigger);
+
+        }
 
 
 
