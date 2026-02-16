@@ -24,16 +24,19 @@ class Control_mobile_SCRA_01 extends Control
 
     public function getDataByQrCode()
     {
-        \models\ErrorLog::saveError($_REQUEST,typeSaveMode: "w+");
+        \models\ErrorLog::saveError(date('d.m.Y H:i:s')."После проверов и маршрутизации",'log.txt');
 
         $this->MODEL->regKey($_REQUEST['qrCode'],$_REQUEST['inOut'],$_REQUEST['typeCode']);
+        \models\ErrorLog::saveError(date('d.m.Y H:i:s')."регистрация ключа",'log.txt');
         $this->MODEL->sendKey();
+        \models\ErrorLog::saveError(date('d.m.Y H:i:s')."Фоновый процесс по отправке на сервер",'log.txt');
 
         //$this->MODEL->registrationScanQrCode();
         $answer = $this->MODEL->getDataByQrCode($_REQUEST['qrCode'],$_REQUEST['typeCode']);
-        \models\ErrorLog::saveError($answer);
+        \models\ErrorLog::saveError(date('d.m.Y H:i:s')."Получены все данные",'log.txt');
         header("content-type:application/json");
         print json_encode($answer);
+        \models\ErrorLog::saveError(date('d.m.Y H:i:s')."Выплюнули в телефон",'log.txt');
     }
 
     public function sendBinaryData()

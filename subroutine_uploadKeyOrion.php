@@ -124,6 +124,8 @@ while ($job) { // крутимся пока всё не обработаем
             ON Orion_regKey.inOut_ = Orion_settingsFor_pLogData.id
         WHERE Orion_regKey.f_upload = 0
     ";
+    \models\ErrorLog::saveError($query,"subroutine_uploadKeyOrion.txt");
+
     $data2 = $conn->complexQuery($query);
 
 
