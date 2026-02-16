@@ -49,6 +49,9 @@ class Control_mobile_SCRA_01 extends Control
     {
         $d = new pList();
         $image = $d->where($d::ID,$_REQUEST['idPhoto'])->select($d::Picture)->fetchField($d::Picture);
+        if ($image === false){
+            $image = file_get_contents('WithOutPhoto.jpg');
+        }
         header("content-type:image/jpeg");
         header("Content-Length:" .(string)(strlen($image)) );
         echo $image;
