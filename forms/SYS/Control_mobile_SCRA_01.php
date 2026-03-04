@@ -25,6 +25,7 @@ class Control_mobile_SCRA_01 extends Control
     public function getDataByQrCode()
     {
         \models\ErrorLog::saveError(date('d.m.Y H:i:s')."После проверов и маршрутизации",'log.txt');
+        \models\ErrorLog::saveError($_REQUEST,'log.txt');
 
         $this->MODEL->regKey($_REQUEST['qrCode'],$_REQUEST['inOut'],$_REQUEST['typeCode']);
         \models\ErrorLog::saveError(date('d.m.Y H:i:s')."регистрация ключа",'log.txt');
@@ -37,6 +38,9 @@ class Control_mobile_SCRA_01 extends Control
         header("content-type:application/json");
         print json_encode($answer);
         \models\ErrorLog::saveError(date('d.m.Y H:i:s')."Выплюнули в телефон",'log.txt');
+        \models\ErrorLog::saveError($answer,'log.txt');
+        \models\ErrorLog::saveError(json_encode($answer),'log.txt');
+
     }
 
     public function sendBinaryData()
@@ -49,7 +53,9 @@ class Control_mobile_SCRA_01 extends Control
     {
         $d = new pList();
         $image = $d->where($d::ID,$_REQUEST['idPhoto'])->select($d::Picture)->fetchField($d::Picture);
+        \models\ErrorLog::saveError(date('d.m.Y H:i:s')." getPhoto1",'log.txt');
         if ($image === false){
+            \models\ErrorLog::saveError(date('d.m.Y H:i:s')." getPhoto2",'log.txt');
             $image = file_get_contents('WithOutPhoto.jpg');
         }
         header("content-type:image/jpeg");

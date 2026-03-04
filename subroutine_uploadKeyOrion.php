@@ -105,8 +105,13 @@ while ($job) { // крутимся пока всё не обработаем
           Orion_settingsFor_pLogData.ZoneIndex,
           Orion_settingsFor_pLogData.Event,
           CONCAT(
-              'HexKey:',
+              'HexKey_',
               keyCard,
+              ': ',
+              case 
+                  when Orion_regKey.inOut_ = 1 then 'Вход'
+                  else 'Выход'
+              END,
               ' ',
               IFNULL(pList.Name,''),
               ' ',
@@ -124,7 +129,6 @@ while ($job) { // крутимся пока всё не обработаем
             ON Orion_regKey.inOut_ = Orion_settingsFor_pLogData.id
         WHERE Orion_regKey.f_upload = 0
     ";
-    \models\ErrorLog::saveError($query,"subroutine_uploadKeyOrion.txt");
 
     $data2 = $conn->complexQuery($query);
 

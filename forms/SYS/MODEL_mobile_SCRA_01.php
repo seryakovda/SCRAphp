@@ -41,10 +41,12 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         if ($typeCode == 'QR_Code'){
             //$qrCode = (int)$qrCode;
             $qrCode =dechex($qrCode);
-            $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
+
+            if (6-strlen($qrCode) > 0)
+                $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
+
             $qrCode = strtoupper($qrCode);
         }
-
         $d = new Orion_regKey();
         $d
             ->set($d::keyCard,$qrCode)
@@ -68,11 +70,12 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         if ($typeCode == 'QR_Code'){
             //$qrCode = (int)$qrCode;
             $qrCode =dechex($qrCode);
-            $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
+            if (6-strlen($qrCode) > 0)
+                $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
             $qrCode = strtoupper($qrCode);
         }
         $value = "Не найдено";
-
+        $pMarkID = 0;
         $status = "2"; // Не найден в системе
 
         $d0 = new pMark();
@@ -106,9 +109,9 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
             $color = "#ec702e";
 
         $ret[] = Array(
-            'name'      =>  $status,
-            'value'     =>  $value1,
-            'color'     => $color,
+            'name'      =>  "$status",
+            'value'     =>  "$value1",
+            'color'     => "$color",
         );
 
         if ($value != "Не найдено"){
