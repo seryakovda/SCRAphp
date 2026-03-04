@@ -26,7 +26,7 @@ class Orion_regKey extends \DB\Table
 
 
         $this->declare_type($this::id,              Type::int);
-        $this->declare_type($this::keyCard,         Type::varchar,10);
+        $this->declare_type($this::keyCard,         Type::varchar,20);
         $this->declare_type($this::inOut_,           Type::int);
         $this->declare_type($this::f_upload,        Type::int);
         $this->declare_type($this::dateTimeEvent,   Type::datetime);

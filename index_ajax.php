@@ -13,7 +13,6 @@ require "spl_autoload.php";
 
 set_time_limit(0);
 
-\models\ErrorLog::saveError(date('d.m.Y H:i:s')."Данные пришли в точку входа",'log.txt');
 if (array_key_exists('sessionHandle',$_REQUEST)){
     session_id($_REQUEST['sessionHandle']);
 }
