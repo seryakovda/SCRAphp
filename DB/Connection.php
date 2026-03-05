@@ -17,9 +17,9 @@ abstract class Connection
     public $MSSQL;
     private $typeFetch = \PDO::FETCH_ASSOC;
 
-    private $dbh;
+    public $dbh;
 
-    private $stmt;
+    public $stmt;
 
     private $table;
     private $orderBy;
@@ -57,7 +57,7 @@ abstract class Connection
     {
         $this->arrayConnectionSettings = $arrayConnectionSettings;
     }
-    private function Conn()
+    public function Conn()
     {
         require Security::DIR()."/Properties/error_reporting.php";
 
