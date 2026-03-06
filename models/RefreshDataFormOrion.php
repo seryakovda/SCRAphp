@@ -176,7 +176,7 @@ class RefreshDataFormOrion
         if ($ID != 0){
             $sql = "insert into pList_TMP (ID,Name,FirstName,MidName,CompN,DivN,name_pPost,Picture) VALUES " . implode(",", $placeholders);
             $conn = new Connect();
-            $conn->conn();
+            $conn->Conn();
             $stmt = $conn->dbh->prepare($sql);
 
             $i = 1;
