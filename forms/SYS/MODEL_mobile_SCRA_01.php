@@ -40,7 +40,7 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         }
         if ($typeCode == 'QR_Code'){
             //$qrCode = (int)$qrCode;
-            $qrCode =dechex($qrCode);
+            $qrCode =$this->hexFormat((int)$qrCode);
 
             if (6-strlen($qrCode) > 0)
                 $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
@@ -52,6 +52,29 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
             ->set($d::keyCard,$qrCode)
             ->set($d::inOut_,$inOut)
             ->insert();
+    }
+    function hexFormat($decimal)
+    {
+        // переводим в HEX
+        $hex = strtoupper(dechex($decimal));
+
+        // дополняем до чётного количества символов
+        if (strlen($hex) % 2 != 0) {
+            $hex = '0' . $hex;
+        }
+
+        // берём последние 3 байта (6 hex символов)
+        $hex = substr($hex, -6);
+
+        // разбиваем
+        $byte1 = substr($hex, 0, 2);
+        $byte23 = substr($hex, 2, 4);
+
+        // переводим обратно в decimal
+
+
+
+        return $byte1.$byte23;
     }
 
     public function sendKey()
@@ -69,9 +92,11 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         }
         if ($typeCode == 'QR_Code'){
             //$qrCode = (int)$qrCode;
-            $qrCode =dechex($qrCode);
+            $qrCode =$this->hexFormat((int)$qrCode);
+
             if (6-strlen($qrCode) > 0)
                 $qrCode = str_repeat('0', 6-strlen($qrCode)) . $qrCode;
+
             $qrCode = strtoupper($qrCode);
         }
         $value = "Не найдено";

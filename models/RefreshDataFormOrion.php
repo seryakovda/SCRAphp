@@ -26,6 +26,9 @@ class RefreshDataFormOrion
 
     public $lastID = 0;
 
+    public $id_pList = 0;
+    public $id_pMark = 0;
+
     public function __construct()
     {
         $d =  new ConnectionSettings();
@@ -124,22 +127,24 @@ class RefreshDataFormOrion
         $d = new pList_TMP();
         $d->delete();
         $exit = false;
+        $this->id_pList = $this->getMAxIdFor_TRIGGER_pList();
+
         while (!$exit){
             try {
-                $exit = true;
-                $this->getFull_pList_next();
+                $ID = $this->getFull_pList_next();
+                if ($ID == 0)
+                    $exit = true;
             }catch (\PDOException $e){
-                $exit = false;
                 mPrint::R("Сбой",mPrint::RED);
+                mPrint::R($e,mPrint::RED);
             }
         }
-
-
-
+        $this->getFull_pList_end();
     }
 
-    public function getFull_pList_next()
+    public function getFull_pList_next($ID = 0)
     {
+
         $LastId = new LastId();
         $data = $LastId->select($LastId::f_pList . ','  .$LastId::id_pList)->fetch();
         if ($data[$LastId::f_pList] == "1"){
@@ -156,34 +161,54 @@ class RefreshDataFormOrion
         $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
         //mPrint::R($data1,mPrint::YELLOW);
 
-        $ID = 0;
-        foreach ($data1 as $key => $row){
-            $d = new pList_TMP();
-            foreach ($row as $field => $value){
-                $binary = false;
-                if ($field == 'Picture')
-                    $binary = true;
-                if ($field == 'ID')
-                    $ID = $value;
-                $d->set($field,$value,$binary);
-            }
-            $d->insert();
-            $d = null;
-            unset($d);
-            $LastId->set($LastId::id_pList,$ID)->update();
-        }
-        $LastId = null;
-        unset($LastId);
+        foreach ($data1 as $row) {
 
-        if ($ID != 0) {
-            mPrint::R($ID,mPrint::GREEN);
-            $this->getFull_pList_next();
-        }else
-            $this->getFull_pList_end();
+            $placeholders[] = "(?,?,?,?,?,?,?,?)";
+
+            foreach ($row as $field => $value) {
+                $params[] = $value;
+
+                if ($field == 'ID') {
+                    $ID = $value;
+                }
+            }
+        }
+        if ($ID != 0){
+            $sql = "insert into pList_TMP (ID,Name,FirstName,MidName,CompN,DivN,name_pPost,Picture) VALUES " . implode(",", $placeholders);
+            $conn = new Connect();
+            $conn->conn();
+            $stmt = $conn->dbh->prepare($sql);
+
+            $i = 1;
+            foreach ($params as $param) {
+
+                if (is_string($param) && strlen($param) > 1000) {
+                    $stmt->bindValue($i, $param, \PDO::PARAM_LOB);
+                } else {
+                    $stmt->bindValue($i, $param);
+                }
+
+                $i++;
+            }
+
+
+            $stmt->execute();
+
+            $LastId->set($LastId::id_pList, $ID)->update();
+            mPrint::R($ID);
+
+            $LastId = null;
+            unset($LastId);
+        }
+
+
+        return $ID;
     }
 
     public function getFull_pList_end()
     {
+
+
         $conn = new Connect();
         $kol_row = $conn->complexQuery("select SUM(1) as kol_row from pList_TMP") ->fetchField('kol_row');
         if ($kol_row > 0) {
@@ -205,7 +230,10 @@ class RefreshDataFormOrion
             mPrint::R('EndDelete_TMP',mPrint::GREEN);
 
             $LastId = new LastId();
-            $LastId->set($LastId::f_pList,"0")->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
+            $LastId
+                ->set($LastId::f_pList,"0")
+                ->set($LastId::id_pList,$this->id_pList)
+                ->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
         }
         mPrint::R('STOP',mPrint::PINK);
     }
@@ -219,11 +247,28 @@ class RefreshDataFormOrion
 
         $d = new pMark_TMP();
         $d->delete();
-        $this->getFull_pMark_next();
+        $this->id_pMark = $this->getMAxIdFor_TRIGGER_pMark();
+
+        $this->getFull_pMark_next_while();
         $this->lastID = $this->getMAxIdFor_TRIGGER_pMark();
     }
 
-    public function getFull_pMark_next()
+    public function getFull_pMark_next_while()
+    {
+        $NoOut = true;
+        while ($NoOut){
+
+            $ID = $this->getFull_pMark_next(0);
+            if ($ID == 0){
+                $NoOut = false;
+            }
+        }
+        mPrint::R("END2",mPrint::RED);
+        $this->getFull_pMark_end();
+    }
+
+
+    public function getFull_pMark_next($ID = 0)
     {
         $LastId = new LastId();
         $data = $LastId->select($LastId::f_pMark . ',' . $LastId::id_pMark)->fetch();
@@ -236,36 +281,45 @@ class RefreshDataFormOrion
         $connMSSQL = new Connect($this->ConnOrion);
         $query1 = $this->buildQuery_pMark("> $startId");
 
-        mPrint::R('start',mPrint::LIGHT_BLUE);
         $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
 
-        $ID = 0;
+
+        $f_FirstRow = true;
+        $stringFields = "insert into pMark_TMP (";
+        $stringData = "VALUES";
         foreach ($data1 as $key => $row){
+
             $d = new pMark_TMP();
+            $stringData = $stringData . "(";
             foreach ($row as $field => $value){
                 if ($field == 'ID')
                     $ID = $value;
-                $d->set($field,$value);
+                if ($f_FirstRow){
+                    $stringFields = $stringFields . $field .",";
+                }
+                $stringData = $stringData . "'$value',";
             }
-            $d->insert();
-            $d = null;
-            unset($d);
-            $LastId->set($LastId::id_pMark,$ID)->update();
+            if ($f_FirstRow){
+                $stringFields = substr($stringFields,0,-1).")"; //удалаем последнюю запятую в полях
+                $f_FirstRow = false;
+            }
+            $stringData = substr($stringData,0,-1)."),"; //удалаем последнюю запятую в полях
         }
-        $LastId = null;
-        unset($LastId);
+        $stringData = substr($stringData,0,-1).";"; //удалаем последнюю запятую в полях
+        $query = " $stringFields $stringData";
+        mPrint::R("START");
 
-        if ($ID != 0) {
-            mPrint::R($ID,mPrint::GREEN);
-            $this->getFull_pMark_next();
-        }else
-            $this->getFull_pMark_end();
+        $conn = new Connect();
+        if ($ID != 0)
+            $conn->complexQuery($query);
+        unset($conn);
+        $LastId->set($LastId::id_pMark,$ID)->update();
+        return $ID;
     }
-
-
 
     public function getFull_pMark_end()
     {
+
         $conn = new Connect();
         $kol_row = $conn->complexQuery("select SUM(1) as kol_row from pMark_TMP") ->fetchField('kol_row');
         if ($kol_row > 0){
@@ -285,10 +339,11 @@ class RefreshDataFormOrion
 
             mPrint::R('EndDelete_TMP',mPrint::GREEN);
 
+
             $LastId = new LastId();
             $LastId
                 ->set($LastId::f_pMark,"0")
-                ->set($LastId::id_pMark,$this->lastID)
+                ->set($LastId::id_pMark,$this->id_pMark)
                 ->update(); //если флаг 1 то нужно продолжать работу а ноль начать заново
         }
 
@@ -297,12 +352,12 @@ class RefreshDataFormOrion
 
     private function buildQuery_pMark($condition)
     {
-        return "SELECT        TOP (100) 
+        return "SELECT        TOP (500) 
                                    ID, 
                                    Gtype, 
                                    Config, 
-                                   dbo.fn_convert_codeP(CodeP) AS CodeP_HEX, 
-                                   Status, 
+                                   substring(dbo.fn_convert_codeP(CodeP),1,20) AS CodeP_HEX, 
+                                   ISNULL(Status,0) as Status, 
                                    Owner, 
                                    GroupID, 
                                    Start, 
@@ -317,7 +372,7 @@ class RefreshDataFormOrion
 
     private function buildQuery_pList($condition)
     {
-        return "SELECT        TOP (100) 
+        return "SELECT        TOP (50) 
                                 dbo.pList.ID,
                                 dbo.pList.Name,
                                 dbo.pList.FirstName,
@@ -382,9 +437,6 @@ class RefreshDataFormOrion
                 $d = null;
                 unset($d);
             }
-            if ($data[$d0::f_pMark] != 0){ //если вдруг начато глобальное обновление вырубаемся
-                return ;
-            }
             $d0->set($d0::id_pMark,$lastID_inDB)->update(); // запоминаем последний обработанный ID для следующего фрагментированного  обновления
         }
     }
@@ -392,7 +444,7 @@ class RefreshDataFormOrion
     public function refresh_pList_afterLastId()
     {
         $d0 = new LastId();
-        $data = $d0 ->select ($d0::id_pMark.",".$d0::f_pMark) -> fetch();
+        $data = $d0 ->select ($d0::id_pList.",".$d0::f_pList) -> fetch();
         if ($data[$d0::f_pList] == 0){ // если идёт обновление встревать ненужно
             $lastID = $data[$d0::id_pList];
             $lastID_inDB = $this->getMAxIdFor_TRIGGER_pList(); // последнй ID триггера
@@ -405,11 +457,12 @@ class RefreshDataFormOrion
             HAVING        (NOT (id_Table IS NULL))";
             $condition = "IN ($condition)";
             $query1  = $this->buildQuery_pList($condition);
+            mPrint::R($query1);
             $data1 = $connMSSQL->complexQuery($query1)->fetchAll();
 
             $ID = 0;
             foreach ($data1 as $key => $row){
-                $data = $d0 ->select ($d0::id_pMark.",".$d0::f_pMark) -> fetch();
+                $data = $d0 ->select ($d0::id_pList.",".$d0::f_pList) -> fetch();
                 if ($data[$d0::f_pList] != 0){ //если вдруг начато глобальное обновление вырубаемся
                     break;
                 }
@@ -426,9 +479,6 @@ class RefreshDataFormOrion
                 $d->insert(); // добавляю вновь пришедшее
                 $d = null;
                 unset($d);
-            }
-            if ($data[$d0::f_pList] != 0){ //если вдруг начато глобальное обновление вырубаемся
-                return ;
             }
             $d0->set($d0::id_pList,$lastID_inDB)->update(); // запоминаем последний обработанный ID для следующего фрагментированного  обновления
         }
