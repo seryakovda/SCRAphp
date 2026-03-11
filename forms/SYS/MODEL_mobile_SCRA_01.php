@@ -124,7 +124,7 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         $ret = Array();
         $sessionHandle = session_id();
         if ($value == "Не найдено"){
-            $value1 = "false";
+            $value1 = "r0=SYS&r1=getPhoto&idPhoto=-1&sessionHandle=$sessionHandle";
             $color = "#c31e1e"; // если не найден в системе то красный
         }else{
             $value1 = "r0=SYS&r1=getPhoto&idPhoto=$ID&sessionHandle=$sessionHandle";
@@ -140,6 +140,20 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         );
 
         if ($value != "Не найдено"){
+            if ($status == "0") {
+                $ret[] = array(
+                    'name' => 'ВНИМАНИЕ !!!',
+                    'value' => chr(10) . chr(13) . chr(10) . chr(13) .
+                        "Пропуск заблокирован !!! Необходимо обратиться в Бюро пропусков"
+                        . chr(10) . chr(13) . chr(10) . chr(13),
+                    'color' => "#ffcccc",
+                );
+            }
+//            $ret[] = Array(
+//                'name'      =>  'ВНИМАНИЕ !!!',
+//                'value'     =>  "Необходимо обратиться в Бюро пропусков",
+//                'color'     => "#ffcccc",
+//            );
             $name1 = $res[$d1::Name];
             $name2 = $res[$d1::FirstName];
             $name3 = $res[$d1::MidName];
@@ -178,6 +192,20 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
             }
 
 
+        }else{
+            $ret[] = Array(
+                'name'      =>  'ВНИМАНИЕ !!!',
+                'value'     =>  chr(10).chr(13).chr(10).chr(13).
+                    "Данные о пропуске неизвестны. Необходимо обратиться в Бюро пропусков"
+                    .chr(10).chr(13).chr(10).chr(13),
+                'color'     => "#94b7e0",
+            );
+
+//            $ret[] = Array(
+//                'name'      =>  'ВНИМАНИЕ !!!',
+//                'value'     =>  "Необходимо обратиться в Бюро пропусков",
+//                'color'     => "#ffffff",
+//            );
         }
 
         $car = false;

@@ -428,12 +428,16 @@ class RefreshDataFormOrion
                 foreach ($row as $field => $value){ // заполняем поля
                     if ($field == 'ID')
                         $ID = $value; // получаем ID
+                    if ($field == 'CodeP_HEX')
+                        $value = substr($value,8,6);
                     $d->set($field,$value);
                 }
                 $d1 = new pMark(); // выбираем туже таблицу
                 $d1->where($d1::ID,$ID)->delete(); // удаляем старое значение (если оно есть)
 
-                $d->insert(); // добавляю вновь пришедшее
+                $res = $d->insert(); // добавляю вновь пришедшее
+                mPrint::R($res);
+
                 $d = null;
                 unset($d);
             }
