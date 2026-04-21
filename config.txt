@@ -1,0 +1,5 @@
+{
+  "KeyAPI": "X",
+  "server": "http://10.13.XX.XXX/BatMon.php",
+  "intervalSeconds": 30
+}

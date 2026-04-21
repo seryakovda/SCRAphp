@@ -286,4 +286,37 @@ class RefreshDataFormPS
 
         return $jsonData;
     }
+
+
+    public function BatteryMonitorEvent()
+    {
+        //\models\ErrorLog::saveError($_REQUEST,"BatMon.txt");
+        // переводим миллисекунды в секунды
+                $timestamp =            $_REQUEST['timestamp'] ;
+                $keyAPI =               $_REQUEST['keyAPI'];
+                $batteryLevel =         $_REQUEST['batteryLevel'];
+                $batteryTemperature =   $_REQUEST['batteryTemperature'];
+                $chargingStatus =       $_REQUEST['chargingStatus'] ? 1 : 0;
+                $voltage =              $_REQUEST['voltage'];
+
+        // получаем дату в формате для MSSQL
+                $dateTime = date('d.m.Y H:i:s',(int) ($timestamp / 1000));
+        //\models\ErrorLog::saveError($dateTime,"BatMon.txt");
+        $newSendArray = Array(
+            "r0"=>"SYS",
+            "r1"=>"BatteryMonitorEvent",
+            "sessionHandle"=>       $_SESSION['sessionHandle'],
+
+            "timestamp"=>           $timestamp,
+            "dateTime"=>            $dateTime,
+            "keyAPI"=>              $keyAPI,
+            "batteryLevel"=>        $batteryLevel,
+            "batteryTemperature"=>  $batteryTemperature,
+            "chargingStatus"=>      $chargingStatus,
+            "voltage"=>             $voltage,
+        );
+
+        $jsonData = $this->curl_request_async($newSendArray);
+
+    }
 }
