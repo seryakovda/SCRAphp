@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Является единственной точкой входа для всех инструкциф приложения
  */
@@ -20,10 +21,11 @@ if (array_key_exists('sessionHandle',$_REQUEST)){
 
 
 session_start();
-//\models\ErrorLog::saveError($_REQUEST,"BatMon.txt");
-// переводим миллисекунды в секунды
-$seconds = $_REQUEST['timestamp'] / 1000;
 
-// получаем дату в формате для MSSQL
-$date = date('Y-m-d H:i:s', $seconds);
-//\models\ErrorLog::saveError($date,"BatMon.txt");
+$R = new models\RefreshDataFormPS();
+if ($R->testConnection()){
+    $R->getSession();
+    if ($R->authorizationOnThePS()){
+        $R->BatteryMonitorEvent();
+    }
+}
