@@ -250,10 +250,11 @@ class VIEW extends \forms\FormView
             $x = $res['x'];
             $command = '$width = '."(int) ($widthMain $x);";
             eval($command);
+            $h_ = (int) ($width / 16 * 9);
 
             $urlImage = "http://$ipS:555/$canal?container=mjpeg&amp;stream=main";
             $this->listURL[] = $urlImage;
-            $img = "<img id = \"imgCamV$i\" width=\"$width\" src=\"$urlImage\">";
+            $img = "<img id = \"imgCamV$i\" height=\"$h_\" width=\"$width\" src=\"$urlImage\">";
 
             $win = new Window();
             $HTML = $HTML .  $win->set()->nameId("winCamV$i")
