@@ -82,6 +82,12 @@ class VIEW extends \forms\FormView
         $HTML = $HTML . $BTN->set($caption.$val)->width(600)->height(40)->func("replaceValue('$caption','$var','$val', false)")->horizontalPosLeft()->fontBig()->floateLeft()->get();
 
 
+        $HTML = $HTML . $BTN->set("Обновить данные Exel")->width(600)->height(40)->func('refresh_Excel()')->fontBig()->floateLeft()->get();
+
+        $HTML = $HTML . $BTN->set("Обновить данные по ключам")->width(600)->height(40)->func('')->fontBig()->floateLeft()->get();
+
+        $HTML = $HTML . $BTN->set("Обновить данные по людям")->width(600)->height(40)->func('')->fontBig()->floateLeft()->get();
+
         $HTML = $HTML . $BTN->set("Получить полные данные СКУД Орион.")->width(600)->height(40)->func('')->fontBig()->floateLeft()->get();
 
         $HTML = $HTML . $BTN->set("Сменить пароль")->width(600)->height(40)->func('exitAPP()')->fontBig()->floateLeft()->get();

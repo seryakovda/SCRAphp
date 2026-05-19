@@ -296,8 +296,12 @@ class RefreshDataFormPS
                 $keyAPI =               $_REQUEST['keyAPI'];
                 $batteryLevel =         $_REQUEST['batteryLevel'];
                 $batteryTemperature =   $_REQUEST['batteryTemperature'];
-                $chargingStatus =       $_REQUEST['chargingStatus'] ? 1 : 0;
                 $voltage =              $_REQUEST['voltage'];
+        if ($_REQUEST['chargingStatus']  == "false") {
+            $chargingStatus = "0";
+        } else {
+            $chargingStatus = "1";
+        }
 
         // получаем дату в формате для MSSQL
                 $dateTime = date('d.m.Y H:i:s',(int) ($timestamp / 1000));
@@ -315,6 +319,7 @@ class RefreshDataFormPS
             "chargingStatus"=>      $chargingStatus,
             "voltage"=>             $voltage,
         );
+        \models\ErrorLog::saveError($newSendArray,"newSendArray.txt");
 
         $jsonData = $this->curl_request_async($newSendArray);
 

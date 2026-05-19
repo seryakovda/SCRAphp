@@ -228,6 +228,17 @@ class VIEW extends \forms\FormView
             }
         }
         $win = new Window();
+
+        $HTML .= $win->set()->nameId("MonitorBattery")
+            ->headSizeNone()
+            ->shadowSmall()
+            ->width(65)
+            ->setBackgroundCssClass('')
+            ->floatLeft()
+            ->content($this->batMon())
+            ->marginMainDIV_OFF()
+            ->get();
+
         $HTML =  $win->set()->nameId("ModifyDisplay")
                 ->headSizeNone()
                 ->shadowSmall()
@@ -344,6 +355,37 @@ class VIEW extends \forms\FormView
         return $HTML;
     }
 
+
+
+    public function batMon()
+    {
+        $data = $this->MODEL->getBatMon();
+        // chargingStatus
+        // keyAPI
+        // batteryLevel
+        $HTML = "";
+        $txt = new \views\Elements\MyText\MyText();
+        while ($res = $data->fetch()){
+            $txt->text("<b>".$res['keyAPI']."</b> ".$res['batteryLevel']."%")
+                ->width(45)->height(40)
+                ->floateLeft()
+                ->horizontalPosCenter()
+                ->position('relative');
+            if ($res['chargingStatus'] == "1") {
+
+                if ( (int)($res['batteryLevel']) >= 98)
+                    $txt->style("background-color:#00FF00");
+                else
+                    $txt->style("background-color:#ffe300");
+            }
+            else
+                $txt->style("background-color:#FF0000");
+            $HTML .= $txt->get();
+
+
+        }
+        return $HTML;
+    }
 
     private function printElementPass($caption,$dataString,$fontSize = "fontSizeBig")
     {
