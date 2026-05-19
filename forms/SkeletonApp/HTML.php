@@ -175,6 +175,24 @@
         })
     }
 
+    function refresh_Excel()
+    {
+        BlockAPP();
+        _G_Ajax({
+            type: "GET",
+            url: "index_ajax.php",
+            dataType: 'text',
+            data: {
+                r0: "SkeletonApp",
+                r1: "refresh_Excel"
+            },
+            success: function (data) {
+                closeBlockAPP();
+                _G_BlockAppMessageOK(data,'reloadPage()')
+            }
+        })
+    }
+
 
     function reloadPage()
     {

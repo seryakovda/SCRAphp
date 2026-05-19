@@ -139,6 +139,7 @@ class Control extends \forms\FormsControl
 
     public function getPhotoNumberplate()
     {
+        session_write_close();
         $d = new RefreshDataFormOrion();
         if ($d->testConnectOrion()) {
             $d = new \DB\Table\NumberCameraImage();
@@ -165,6 +166,7 @@ class Control extends \forms\FormsControl
 
     public function downloadImage()
     {
+        session_write_close();
         $d = new pList();
 
         //$image->setCompressionQuality(100);
@@ -191,4 +193,12 @@ class Control extends \forms\FormsControl
     {
         $_SESSION['indexScreenCamera'] = $_REQUEST['indexScreenCamera'];
     }
+
+    public function BatMonitor()
+    {
+        session_write_close();
+        $this->VIEW->setMODEL($this->MODEL);
+        $this->VIEW->printElement($this->VIEW->batMon());
+    }
+
 }

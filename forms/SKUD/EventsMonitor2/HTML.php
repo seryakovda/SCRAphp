@@ -45,6 +45,7 @@
         JsonSTR_listURL = '<?php print $this->listURL; ?>'
         _G_value0 = JSON.parse(JsonSTR_listURL);
         setTimeout(GetEvents, 2000);
+        setTimeout(BatMonitor, 2000);
         setTimeout(GetEventsNumber, 2000);
         let rel = setInterval(reload_camera, 60000);
 
@@ -120,6 +121,28 @@
         });
     }
 
+    function BatMonitor()
+    {
+        _G_Ajax({
+            type: "POST",
+            url: "index_ajax.php",
+            data: {
+                parent:"SKUD",
+                r0: "EventsMonitor2",
+                r1: "BatMonitor",
+
+            },
+            dataType: 'text',
+            success: function (data) {
+                integrationsScriptCSS("MonitorBattery", data)
+                setTimeout(BatMonitor, 2000);
+            },
+            error: function(){
+                setTimeout(BatMonitor, 2000);
+                console.log("Ошибка которой не должно возникать")
+            }
+        });
+    }
 
     function setIndexScreenCamera(index)
     {

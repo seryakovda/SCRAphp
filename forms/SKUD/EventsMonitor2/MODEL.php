@@ -285,5 +285,24 @@ class MODEL extends \forms\FormsModel
         return $conn->complexQuery($query);
     }
 
-
+    public function getBatMon()
+    {
+        $qyery = "
+        SELECT 
+            BatMon.keyAPI,
+            BatMon.batteryLevel,
+            BatMon.chargingStatus   
+        FROM BatMon
+        JOIN (
+            SELECT 
+                MAX(id) AS id,
+                keyAPI
+            FROM BatMon
+            GROUP BY keyAPI
+        ) AS t1
+        ON BatMon.id = t1.id;
+        ";
+        $conn = new Connect();
+        return $conn->complexQuery($qyery);
+    }
 }
