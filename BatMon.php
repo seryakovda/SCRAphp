@@ -39,14 +39,9 @@ $dateTime = date('Y-m-d H:i:s',(int) ($timestamp / 1000));
 
 $dateNowD = new DateTime();
 $dateNow = $dateNowD->format('Y-m-d H:i:s');
-$dateNowD->modify('-3 minute');
-$dateNowOld =  $dateNowD->format('Y-m-d H:i:s');
-
 
 try{
     $d = new \DB\Table\BatMon();
-
-    $d->where($d::dateTimeIndex,$dateNowOld,"<")->delete();
 
     $d
         ->set($d::dateTimeIndex,$dateNow)
