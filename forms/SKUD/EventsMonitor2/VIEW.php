@@ -373,7 +373,7 @@ class VIEW extends \forms\FormView
                 ->position('relative');
             if ($res['chargingStatus'] == "1") {
 
-                if ( (int)($res['batteryLevel']) >= 98)
+                if ( (int)($res['batteryLevel']) >= 78)
                     $txt->style("background-color:#00FF00");
                 else
                     $txt->style("background-color:#ffe300");
