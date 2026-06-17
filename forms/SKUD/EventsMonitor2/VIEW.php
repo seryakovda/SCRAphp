@@ -371,15 +371,15 @@ class VIEW extends \forms\FormView
                 ->floateLeft()
                 ->horizontalPosCenter()
                 ->position('relative');
-            if ($res['chargingStatus'] == "1") {
 
-                if ( (int)($res['batteryLevel']) >= 78)
-                    $txt->style("background-color:#00FF00");
+            if ( (int)($res['batteryLevel']) >= 78) // если заряд устраивает то зелёный
+                $txt->style("background-color:#00FF00");
+            else { // если заряд не устраиваевает проверяем заряжается или нет
+                if ($res['chargingStatus'] == "1")
+                    $txt->style("background-color:#ffe300"); // если заряжается то желтый
                 else
-                    $txt->style("background-color:#ffe300");
+                    $txt->style("background-color:#FF0000"); // если не заряжается то красный
             }
-            else
-                $txt->style("background-color:#FF0000");
             $HTML .= $txt->get();
 
 
