@@ -2,6 +2,7 @@
 
 namespace forms\SYS;
 
+use DB\Connection;
 use DB\Table\pList;
 use DB\Table\Users;
 use \models\_G_session;
@@ -24,6 +25,8 @@ class Control_mobile_SCRA_01 extends Control
 
     public function getDataByQrCode()
     {
+        ob_start();
+
 //        \models\ErrorLog::saveError(date('d.m.Y H:i:s')."После проверов и маршрутизации",'log.txt');
 //        \models\ErrorLog::saveError($_REQUEST,'log.txt');
 
@@ -41,6 +44,10 @@ class Control_mobile_SCRA_01 extends Control
 //        \models\ErrorLog::saveError($answer,'log.txt');
 //        \models\ErrorLog::saveError(json_encode($answer),'log.txt');
 
+        $output = ob_get_contents();
+        ob_end_clean();
+        \models\ErrorLog::saveError($output,"getDataByQrCode.txt");
+        print  $output;
     }
 
     public function sendBinaryData()
