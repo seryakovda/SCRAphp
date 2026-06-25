@@ -157,9 +157,9 @@ class VIEW extends \forms\FormView
             $ELM = new \views\Elements\VElements();
             $div = $ELM->tag('div')
                 ->setStyle(
-                "width:".(_G_session::widthMobile() - 445)."px;".
-                "height:".(_G_session::heightMobile()-820)."px;".
-                "overflow-y: scroll"
+                    "width:".(_G_session::widthMobile() - 445)."px;".
+                    "height:".(_G_session::heightMobile()-820)."px;".
+                    "overflow-y: scroll"
                 )
                 ->setId("winCamT")
                 ->setCaption($this->ViewNumberPlate())
@@ -191,15 +191,15 @@ class VIEW extends \forms\FormView
                 ->get();
 
         $this->windowContent = $this->windowContent .  $winDor->set()->nameId('winDor')
-            ->width( 420)
-            ->height(_G_session::heightMobile()-45,"height:")
-            ->setBackgroundCssClass('')
-            ->headSizeNone()
-            ->shadowSmall()
+                ->width( 420)
+                ->height(_G_session::heightMobile()-45,"height:")
+                ->setBackgroundCssClass('')
+                ->headSizeNone()
+                ->shadowSmall()
                 ->marginMainDIV_OFF()
-            ->style("display:block; overflow-y: auto;")
-            ->content($this->ViewPass())
-            ->get();
+                ->style("display:block; overflow-y: auto;")
+                ->content($this->ViewPass())
+                ->get();
 
     }
 
@@ -240,15 +240,15 @@ class VIEW extends \forms\FormView
             ->get();
 
         $HTML =  $win->set()->nameId("ModifyDisplay")
-                ->headSizeNone()
-                ->shadowSmall()
-                ->height($height)
-                ->width(70)
-                ->setBackgroundCssClass('')
-                ->floatLeft()
-                ->content($HTML)
-                ->marginMainDIV_OFF()
-                ->get();
+            ->headSizeNone()
+            ->shadowSmall()
+            ->height($height)
+            ->width(70)
+            ->setBackgroundCssClass('')
+            ->floatLeft()
+            ->content($HTML)
+            ->marginMainDIV_OFF()
+            ->get();
 
         $i = 1;
 
@@ -376,7 +376,10 @@ class VIEW extends \forms\FormView
                 $txt->style("background-color:#00FF00");
             else { // если заряд не устраиваевает проверяем заряжается или нет
                 if ($res['chargingStatus'] == "1")
-                    $txt->style("background-color:#ffe300"); // если заряжается то желтый
+                    if ( (int)($res['batteryLevel']) < 75)
+                        $txt->style("background-color:#FF0000"); // если не заряжается то красный
+                    else
+                        $txt->style("background-color:#ffe300"); // если заряжается то желтый
                 else
                     $txt->style("background-color:#FF0000"); // если не заряжается то красный
             }
