@@ -367,9 +367,10 @@ class VIEW extends \forms\FormView
         $txt = new \views\Elements\MyText\MyText();
         while ($res = $data->fetch()){
             $txt->text("<b>".$res['keyAPI']."</b> ".$res['batteryLevel']."%")
-                ->width(45)->height(40)
+                ->width(45)->height(35)
                 ->floateLeft()
                 ->horizontalPosCenter()
+                ->style("margin-bottom:0px")
                 ->position('relative');
 
             if ( (int)($res['batteryLevel']) >= 78) // если заряд устраивает то зелёный
@@ -384,7 +385,20 @@ class VIEW extends \forms\FormView
                     $txt->style("background-color:#FF0000"); // если не заряжается то красный
             }
             $HTML .= $txt->get();
+            $txt->text("")
+                ->width(45)->height(5)
+                ->floateLeft()
+                ->horizontalPosCenter()
+                ->style("margin-top:0px")
+                ->position('relative');
 
+            if ($res['chargingStatus'] == "1"){
+                $txt->style("background-color:#00FF00");
+
+            }else{
+                $txt->style("background-color:#FF0000"); // если не заряжается то красный
+            }
+            $HTML .= $txt->get();
 
         }
         return $HTML;
