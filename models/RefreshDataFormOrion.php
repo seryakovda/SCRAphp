@@ -355,7 +355,10 @@ class RefreshDataFormOrion
         return "SELECT        TOP (500) 
                                    ID, 
                                    Gtype, 
-                                   Config, 
+                                   CASE 
+                                       WHEN (Finish < GETDATE()) THEN 1000
+                                       ELSE Config
+                                   END as Config,
                                    substring(dbo.fn_convert_codeP(CodeP),1,20) AS CodeP_HEX, 
                                    ISNULL(Status,0) as Status, 
                                    Owner, 

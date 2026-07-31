@@ -170,6 +170,7 @@ class MODEL extends \forms\FormsModel
                         when 0 then
                             case 
                                 when pmark.Config = 32896 then '#ec702e' -- рыжый
+                                when pmark.Config = 128 and (pMark.Finish < Plogdata.TimeVal) then '#ec702e' -- рыжый
                                 else ''
                             END
                         else
