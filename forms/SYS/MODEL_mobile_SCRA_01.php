@@ -131,7 +131,7 @@ class MODEL_mobile_SCRA_01 extends \forms\SYS\MODEL
         }
 
         if ($status == "0")  // если заблокирован пропуск то меняем цвет
-            $color = "#ec702e";
+            $color = "#ec702e"; // рыжый
 
         $ret[] = Array(
             'name'      =>  "$status",
