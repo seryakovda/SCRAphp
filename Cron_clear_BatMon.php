@@ -14,6 +14,8 @@ $dateNowD = new DateTime();
 $dateNowD->modify('-3 minute');
 $dateNowOld =  $dateNowD->format('Y-m-d H:i:s');
 
-    $d = new \DB\Table\BatMon();
+$d = new \DB\Table\BatMon();
+$d->where($d::dateTimeIndex,$dateNowOld,"<")->delete();
 
-    $d->where($d::dateTimeIndex,$dateNowOld,"<")->delete();
+$d = new \DB\Table\BatMonArduino();
+$d->where($d::dateTimeIndex,$dateNowOld,"<")->delete();

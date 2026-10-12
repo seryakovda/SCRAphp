@@ -6,6 +6,7 @@ namespace models;
 
 use DB\Connect;
 use DB\Connection;
+use DB\Table\BatMonArduinoSettings;
 use DB\Table\CarPrivilege;
 use DB\Table\ConnectionSettings;
 use DB\Table\AcessPoint;
@@ -319,9 +320,80 @@ class RefreshDataFormPS
             "chargingStatus"=>      $chargingStatus,
             "voltage"=>             $voltage,
         );
-        \models\ErrorLog::saveError($newSendArray,"newSendArray.txt");
 
         $jsonData = $this->curl_request_async($newSendArray);
+
+    }
+
+    public function BatteryMonitorEventArduino()
+    {
+        //\models\ErrorLog::saveError($_REQUEST,"BatMon.txt");
+        // переводим миллисекунды в секунды
+        $deviceId =             $_REQUEST['deviceId'];
+        $f_relayPin_trigger =   $_REQUEST['f_relayPin_trigger'] ;
+        $f_restart_btn =        $_REQUEST['f_restart_btn'];
+        $f_restart_trigger =    $_REQUEST['f_restart_trigger'];
+        $voltage =              $_REQUEST['voltage'];
+        if ($_REQUEST['chargingStatus']  == "false") {
+            $chargingStatus = "0";
+        } else {
+            $chargingStatus = "1";
+        }
+        $dateNowD = new \DateTime();
+        $dateTimeIndex = $dateNowD->format('m.d.Y H:i:s');
+
+        //\models\ErrorLog::saveError($dateTime,"BatMon.txt");
+        $newSendArray = Array(
+            "r0"=>"SYS",
+            "r1"=>"BatteryMonitorEventArduino",
+            "sessionHandle"=>       $_SESSION['sessionHandle'],
+
+            "dateTimeIndex"=>       $dateTimeIndex,
+            "deviceId"=>            $deviceId,
+            "f_relayPin_trigger"=>  $f_relayPin_trigger,
+            "f_restart_btn"=>       $f_restart_btn,
+            "f_restart_trigger"=>   $f_restart_trigger,
+            "voltage"=>             $voltage,
+        );
+
+        $jsonData = $this->curl_request_async($newSendArray);
+
+    }
+
+    public function getBatMonSettings()
+    {
+        $jsonData = $this->curl_request_async(Array(
+            "r0"=>"SYS",
+            "r1"=>"getBatMonSettings",
+            "sessionHandle"=>$_SESSION['sessionHandle'],
+        ));
+        $data = json_decode($jsonData,true);
+
+        foreach ($data as $row){
+            $d = new BatMonArduinoSettings();
+            foreach ($row as $field => $value){
+                    $d->set($field,$value);
+            }
+
+            try{// если записи нет то добавиться
+                $d->insert();
+            }catch (\PDOException $e){
+
+            }
+
+            $d = null;
+
+            $d = new BatMonArduinoSettings();
+            foreach ($row as $field => $value){
+                if ($field == "deviceId"){
+                    $deviceId = $value;
+                }else{
+                    $d->set($field,$value);
+                }
+            }
+            $d->where($d::deviceId,$deviceId);
+            $d->update();
+        }
 
     }
 }
