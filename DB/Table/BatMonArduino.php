@@ -34,7 +34,7 @@ class BatMonArduino extends \DB\Table
         $this->declare_type($this::f_relayPin_trigger,  Type::int);
         $this->declare_type($this::f_restart_btn,       Type::int);
         $this->declare_type($this::f_restart_trigger,   Type::int);
-        $this->declare_type($this::voltage,             Type::money);
+        $this->declare_type($this::voltage,             Type::decimal,'6,2');
 
         $this->declare_defaultValue($this::dateTimeIndex,'getdate()');
     }

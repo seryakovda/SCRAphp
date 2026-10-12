@@ -40,6 +40,7 @@ class Type
 
     const mediumblob = 'mediumblob'; // MySQL
 
+    const decimal = 'decimal'; // MySQL
 
     const uniqueidentifier = 'uniqueidentifier';
     /**
