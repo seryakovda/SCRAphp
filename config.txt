@@ -1,5 +1,7 @@
 {
-  "KeyAPI": "X",
-  "server": "http://10.13.XX.XXX/BatMon.php",
+  "keyAPI": "X",
+  "server": "http://10.13.XX.XXX",
+  "batMon": "/BatMon.php",
+  "kiosk": "/2.php"
   "intervalSeconds": 30
 }

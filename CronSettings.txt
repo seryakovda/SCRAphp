@@ -14,4 +14,4 @@
 
 
 
-0       4    * * 0 /usr/sbin/reboot
+0       4  * * * /usr/sbin/reboot
