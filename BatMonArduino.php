@@ -21,7 +21,6 @@ if (array_key_exists('sessionHandle',$_REQUEST)){
 
 
 session_start();
-
 $deviceId =             $_REQUEST['deviceId'];
 $f_relayPin_trigger =   $_REQUEST['f_relayPin_trigger'] ;
 $f_restart_btn =        $_REQUEST['f_restart_btn'];
@@ -56,4 +55,5 @@ if ($R->testConnection()){
 }
 
 $d = new \DB\Table\BatMonArduinoSettings();
-print $d->where($d::deviceId,$deviceId)->select($d::address)->fetchField($d::address);
+$server = $d->where($d::deviceId,$deviceId)->select($d::address)->fetchField($d::address);
+print json_encode(Array("server"=>$server));
