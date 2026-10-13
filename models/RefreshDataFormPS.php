@@ -293,11 +293,11 @@ class RefreshDataFormPS
     {
         //\models\ErrorLog::saveError($_REQUEST,"BatMon.txt");
         // переводим миллисекунды в секунды
-                $timestamp =            $_REQUEST['timestamp'] ;
-                $keyAPI =               $_REQUEST['keyAPI'];
-                $batteryLevel =         $_REQUEST['batteryLevel'];
-                $batteryTemperature =   $_REQUEST['batteryTemperature'];
-                $voltage =              $_REQUEST['voltage'];
+        $timestamp =            $_REQUEST['timestamp'] ;
+        $keyAPI =               $_REQUEST['keyAPI'];
+        $batteryLevel =         $_REQUEST['batteryLevel'];
+        $batteryTemperature =   $_REQUEST['batteryTemperature'];
+        $voltage =              $_REQUEST['voltage'];
         if ($_REQUEST['chargingStatus']  == "false") {
             $chargingStatus = "0";
         } else {
@@ -305,7 +305,7 @@ class RefreshDataFormPS
         }
 
         // получаем дату в формате для MSSQL
-                $dateTime = date('d.m.Y H:i:s',(int) ($timestamp / 1000));
+        $dateTime = date('d.m.Y H:i:s',(int) ($timestamp / 1000));
         //\models\ErrorLog::saveError($dateTime,"BatMon.txt");
         $newSendArray = Array(
             "r0"=>"SYS",
@@ -340,7 +340,7 @@ class RefreshDataFormPS
             $chargingStatus = "1";
         }
         $dateNowD = new \DateTime();
-        $dateTimeIndex = $dateNowD->format('m.d.Y H:i:s');
+        $dateTimeIndex = $dateNowD->format('d.m.Y H:i:s');
 
         //\models\ErrorLog::saveError($dateTime,"BatMon.txt");
         $newSendArray = Array(
@@ -372,7 +372,7 @@ class RefreshDataFormPS
         foreach ($data as $row){
             $d = new BatMonArduinoSettings();
             foreach ($row as $field => $value){
-                    $d->set($field,$value);
+                $d->set($field,$value);
             }
 
             try{// если записи нет то добавиться
