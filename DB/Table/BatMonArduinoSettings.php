@@ -10,8 +10,11 @@ class BatMonArduinoSettings extends \DB\Table
 
     const name = 'name';
 
+    const keyAPI = 'keyAPI';
+
     const address = 'address';
 
+    const reboot = 'reboot';
 
     public function initColumn($childClass = '')
     {
@@ -22,9 +25,11 @@ class BatMonArduinoSettings extends \DB\Table
 
 
         $this->declare_type($this::deviceId,Type::varchar,36);
-        $this->declare_type($this::name,Type::varchar,6);
-        $this->declare_type($this::address,Type::varchar,200);
-
+        $this->declare_type($this::name,    Type::varchar,6);
+        $this->declare_type($this::address, Type::varchar,200);
+        $this->declare_type($this::keyAPI,  Type::varchar,36);
+        $this->declare_type($this::reboot,  Type::int);
+        $this->declare_defaultValue($this::reboot,"0");
     }
 
 }
